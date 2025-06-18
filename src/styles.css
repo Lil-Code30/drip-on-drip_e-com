@@ -1,1 +1,44 @@
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Stalinist+One&display=swap");
 @import "tailwindcss";
+
+@theme {
+  /* --color-primary:  */
+
+  --font-inter: "Inter", sans-serif;
+  --font-geist: "Geist", sans-serif;
+  --font-stalinst: "Stalinist One", sans-serif;
+}
+
+@layer base {
+  * {
+    @apply m-0 p-0 box-border font-geist;
+  }
+}
+
+@layer components {
+  #root {
+    @apply min-h-[100vh] flex flex-col;
+  }
+  .active-link {
+    @apply font-bold border-b-2;
+  }
+  .nav-link {
+    @apply text-xl md:text-lg text-center hover:font-semibold transition-all duration-300 my-1.5 mx-2 py-1 md:py-0 border md:border-0 rounded;
+  }
+}
+
+@layer utilities {
+  .flex-center {
+    @apply flex items-center justify-center;
+  }
+  .slide-in {
+    transform: translateX(-130%);
+    animation: slide-in 0.5s forwards;
+  }
+}
+
+@keyframes slide-in {
+  100% {
+    transform: translateX(0%);
+  }
+}

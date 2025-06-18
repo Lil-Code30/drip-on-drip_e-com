@@ -1,8 +1,11 @@
+import AppRouter from "./routes/AppRoutes";
+import { ProductProvider } from "./contexts/ProductsContext";
+
 function App() {
   return (
-    <>
-      <h1 class="text-3xl text-center font-bold underline">Hello world!</h1>
-    </>
+    <ProductProvider>
+      <AppRouter />
+    </ProductProvider>
   );
 }
 
