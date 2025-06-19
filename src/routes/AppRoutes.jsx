@@ -7,7 +7,7 @@ import Shop from "../pages/shop/Shop";
 import ProductDetails from "../pages/shop/ProductDetails";
 import Contact from "../pages/forms/Contact";
 import Login from "../pages/forms/Login";
-import SignUp from "../pages/forms/Signup";
+import SignUp from "../pages/forms/SignUp";
 import Cart from "../pages/Cart";
 import WishList from "../pages/WishList";
 import NotFound from "../pages/NotFound";
