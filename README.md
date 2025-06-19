@@ -1,7 +1,48 @@
-# React + Tailwindcss + Vite
+# 🛍️ DripOnDrip - Site E-commerce de Vêtements
 
-This template provides a minimal setup to get React and Tailwindcss working in Vite with HMR and some ESLint rules.
+DripOnDrip est une application web de e-commerce pour vêtements, conçue avec **React.js** et **Tailwind CSS** pour l’interface frontend. Le backend sera prochainement implémenté avec **Node.js**. Ce projet fait partie de mon parcours Full Stack Developer documenté en live sur [YouTube](https://youtube.com/playlist?list=PLCfWsbfoICpsPGwc0I5yBkHp6VD1TR8qh&si=UTNZnS5IU8nYhAHB).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-- [@tailwindcss/vite](https://github.com/tailwindlabs/tailwindcss)
+---
+
+## 🚀 Technologies utilisées
+
+### Frontend
+
+- React.js
+- Tailwind CSS
+- React Router
+- Context API
+- Vite
+
+### Backend (à venir)
+
+- Node.js
+- PostgreSQL
+
+---
+
+## 📦 Installation & Démarrage
+
+### Cloner le dépôt
+
+```bash
+git clone https://github.com/Lil-Code30/drip-on-drip_e-com.git
+cd drip-on-drip_e-com
+```
+
+Installation des dépendances
+
+```bash
+npm install
+```
+
+Lancer le serveur de développement
+
+```bash
+npm run dev
+```
+
+## 🎥 Suivre le projet
+
+Je documente chaque étape du développement sur ma chaîne YouTube
+🔗 https://www.youtube.com/@licode30
