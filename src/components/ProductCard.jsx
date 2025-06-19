@@ -17,7 +17,9 @@ export default function ProductCard({ product }) {
             <span>{discountPercent}</span>
           </div>
         ) : null}
-        <WishListBtn />
+        <div className="absolute right-0 top-0">
+          <WishListBtn />
+        </div>
       </div>
       <h1 className="font-inter font-bold mt-1.5">{product.title}</h1>
       <p className="line-clamp-2 mb-1.5">{product.description}</p>
