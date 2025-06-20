@@ -1,6 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { useState } from "react";
 
+import ProductCard from "../../components/ProductCard";
 import AddToCartBtn from "../../components/AddToCartBtn";
 import WishListBtn from "../../components/WishListBtn";
 import QuantityBox from "../../components/QuantityBox";
@@ -19,7 +20,6 @@ export default function ProductDetails() {
     { id: 5, size: "XL", selected: false },
     { id: 6, size: "XXL", selected: false },
   ]);
-
   const [shoeSizes, setShoeSizes] = useState([
     { id: 1, size: 6, selected: false },
     { id: 2, size: 6.5, selected: false },
@@ -35,17 +35,45 @@ export default function ProductDetails() {
     { id: 12, size: 11.5, selected: false },
   ]);
   const [quantity, setQuantity] = useState(1);
+  // state to verify which tap is active to display content
+  const [activeTab, setActiveTab] = useState("Description");
+
   // increment quantity
   const incrementQuantity = () => setQuantity((prev) => prev + 1);
-
   // decrement quantity
   const decrementQuantity = () =>
     setQuantity((prev) => (prev <= 1 ? 1 : prev - 1));
+
+  // function to display the component that is active
+  const displayActiveTabContent = () => {
+    switch (activeTab) {
+      case "Description":
+        return <ProductDescription currentProduct={currentProduct} />;
+      case "Informations":
+        return <ProductAdditionalInfos currentProduct={currentProduct} />;
+      case "Reviews":
+        return <ProductReview reviews={currentProduct.reviews} />;
+      default:
+        return null;
+    }
+  };
 
   const allProducts = JSON.parse(localStorage.getItem("allProducts"));
   const currentProduct = allProducts.find(
     (product) => product.id === Number(id)
   );
+  const relatedProduct = allProducts
+    .filter(
+      (product) =>
+        product.category === currentProduct.category &&
+        product.id !== currentProduct.id
+    )
+    .slice(0, 4);
+
+  const relatedProductEl = relatedProduct.map((product) => {
+    return <ProductCard key={product.id} product={product} />;
+  });
+
   const discountPercent = currentProduct.discountPercentage.toFixed() + "% OFF";
   const originalPrice =
     currentProduct.price / (1 - currentProduct.discountPercentage / 100);
@@ -113,14 +141,11 @@ export default function ProductDetails() {
   });
 
   return (
-    <section className="md:w-[80%] md:mx-auto mx-5">
+    <section id="top" className="md:w-[80%] md:mx-auto mx-5">
       <div>
         <p>
-          <Link to="/">Home</Link> &gt;{" "}
-          <Link to="../shop" path="relative">
-            Shop
-          </Link>{" "}
-          &gt; <span>{currentProduct.title}</span>
+          <Link to="/">Home</Link> &gt; <Link to="../shop">Shop</Link> &gt;{" "}
+          <span>{currentProduct.title}</span>
         </p>
       </div>
       <section className="container w-full mt-5 mb-3 mx-auto flex flex-col md:flex-row gap-3">
@@ -226,12 +251,37 @@ export default function ProductDetails() {
         </div>
       </section>
       <section className="my-5">
-        <div></div>
-        <div>
-          <ProductDescription currentProduct={currentProduct} />
-          <ProductAdditionalInfos currentProduct={currentProduct} />
-          <ProductReview reviews={currentProduct.reviews} />
+        <div className="flex gap-x-2 text-lg w-full border-b-3 border-gray-100 mb-2">
+          <button
+            onClick={() => setActiveTab("Description")}
+            className={`hover:cursor-pointer ${
+              activeTab === "Description" ? "border-b-3 border-black" : ""
+            } `}
+          >
+            Description
+          </button>
+          <button
+            onClick={() => setActiveTab("Informations")}
+            className={`hover:cursor-pointer ${
+              activeTab === "Informations" ? "border-b-3 border-black" : ""
+            }`}
+          >
+            Additional Informations
+          </button>
+          <button
+            onClick={() => setActiveTab("Reviews")}
+            className={`hover:cursor-pointer ${
+              activeTab === "Reviews" ? "border-b-3 border-black" : ""
+            }`}
+          >
+            Reviews
+          </button>
         </div>
+        <div>{displayActiveTabContent()}</div>
+      </section>
+      <section>
+        <h1 className="text-3xl font-semibold">Related Products</h1>
+        <div className="grid grid-cols-4 gap-x-2 my-3">{relatedProductEl}</div>
       </section>
     </section>
   );

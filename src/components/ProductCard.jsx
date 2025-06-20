@@ -7,11 +7,11 @@ export default function ProductCard({ product }) {
   const originalPrice = product.price / (1 - product.discountPercentage / 100);
   return (
     <Link
-      to={`product/${product.id}`}
+      to={{ pathname: `/shop/product/${product.id}`, hash: "#top" }}
       className="bg-white shadow-sm rounded p-2 hover:shadow-xl transition-all duration-300 flex flex-col"
     >
-      <div className="relative border-1 border-black/50 mb-1 shadow-lg rounded">
-        <img src={product.images[0]} alt={product.title} />
+      <div className="relative w-fit border-1 border-black/50 mb-1 shadow-lg rounded">
+        <img className="" src={product.images[0]} alt={product.title} />
         {product.discountPercentage.toFixed() > 0 ? (
           <div className="absolute -top-1 -left-1 bg-yellow-400 w-auto px-1 text-md rounded-sm flex-center">
             <span>{discountPercent}</span>

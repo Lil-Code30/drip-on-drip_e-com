@@ -112,7 +112,7 @@ export default function ProductReview({ reviews }) {
       <div className="mb-2">{reviewsEl}</div>
       <hr />
       <form className="mt-3">
-        <h2 className="text-xl font-medium">Add Your Review</h2>
+        <h2 className="text-3xl font-medium">Add Your Review</h2>
         <div>
           <h3 className="font-semibold text-xl">Your Rating</h3>
         </div>
