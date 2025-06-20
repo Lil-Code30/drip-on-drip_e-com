@@ -57,7 +57,7 @@ export default function Shop() {
             </form>
             <p className="text-md mb-2">Showing 1003 Products</p>
           </div>
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-3 p-3 bg-red-100/30">
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-4 p-3 bg-red-100/30">
             {productsEl}
           </div>
         </div>
