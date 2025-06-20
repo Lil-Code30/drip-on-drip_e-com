@@ -20,16 +20,16 @@ export default function Shop() {
         </div>
       </div>
       <section className="p-3 md:px-5 pt-5 flex gap-x-3 ">
-        <aside className="">
-          <div className="flex gap-x-1.5">
-            <h2 className="text-2xl font-semibold">Filters</h2>
+        <aside className="w-1/3">
+          <div className="flex items-center gap-x-1.5">
+            <h2 className="text-2xl font-semibold pr-2">Filters</h2>
             <button className="hover:cursor-pointer underline text-sm text-gray-400">
               Clear filter
             </button>
           </div>
           <form action="" className="mt-2">
-            <h2 className="text-lg">Categories</h2>
-            <div className="flex flex-col gap-y-0.5 mt-2">
+            <h2 className="text-lg font-semibold">Categories</h2>
+            <div className="flex flex-col gap-y-0.5 mt-1">
               <label>
                 <input type="checkbox" name="men-shirts" id="men-shirts" /> Men
                 Shirts
