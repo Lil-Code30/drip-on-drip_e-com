@@ -8,7 +8,7 @@ export default function ProductCard({ product }) {
   return (
     <Link
       to={{ pathname: `/shop/product/${product.id}`, hash: "#top" }}
-      className="bg-white shadow-sm rounded p-2 hover:shadow-xl transition-all duration-300 flex flex-col"
+      className="bg-white shadow-sm rounded p-2 hover:shadow-xl transition-all duration-300 flex flex-col z-1"
     >
       <div className="relative w-fit border-1 border-black/50 mb-1 shadow-lg rounded">
         <img className="" src={product.images[0]} alt={product.title} />
@@ -17,8 +17,8 @@ export default function ProductCard({ product }) {
             <span>{discountPercent}</span>
           </div>
         ) : null}
-        <div className="absolute right-0 top-0">
-          <WishListBtn />
+        <div className="absolute right-0 top-0 z-[99]">
+          <WishListBtn product={product} />
         </div>
       </div>
       <h1 className="font-inter font-bold mt-1.5">{product.title}</h1>

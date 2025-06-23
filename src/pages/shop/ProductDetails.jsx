@@ -240,7 +240,7 @@ export default function ProductDetails() {
             />
             <AddToCartBtn />
             <div className=" size-8 flex-center border rounded">
-              <WishListBtn />
+              <WishListBtn product={currentProduct} />
             </div>
           </div>
           <hr />
