@@ -1,6 +1,20 @@
-export default function AddToCartBtn() {
+import { useCart } from "../contexts/CartContext";
+
+export default function AddToCartBtn({ product, quantity }) {
+  const { addToCart } = useCart();
+  const productToCart = {
+    id: product.id,
+    name: product.title,
+    productImage: product.images[0],
+    quantity: quantity,
+    price: product.price,
+  };
+
   return (
-    <button className="flex flex-center text-white bg-black px-8 py-1.5  rounded hover:cursor-pointer">
+    <button
+      onClick={() => addToCart(productToCart)}
+      className="flex flex-center text-white bg-black px-8 py-1.5  rounded hover:cursor-pointer hover:bg-white hover:border hover:text-black hover:font-semibold transition-all duration-300 ease-in"
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"

@@ -2,10 +2,12 @@ import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { NavLinks } from "../data";
 import { useWishList } from "../contexts/WishListContext";
+import { useCart } from "../contexts/CartContext";
 
 export default function Header() {
   const [menuChecked, setMenuChecked] = useState(false);
   const { wishList } = useWishList();
+  const { cart } = useCart();
 
   const handleMenuChecked = () => {
     setMenuChecked((prev) => !prev);
@@ -103,7 +105,7 @@ export default function Header() {
             />
           </svg>
           <span className="bg-red-600 absolute text-white rounded-full size-5 flex-center text-sm p-1.5 -top-1 -right-2">
-            10
+            {cart.length}
           </span>
         </Link>
         <Link title="Wishlist" to="wishlist" className="flex-center relative">

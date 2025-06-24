@@ -238,7 +238,7 @@ export default function ProductDetails() {
               incrementQuantity={incrementQuantity}
               decrementQuantity={decrementQuantity}
             />
-            <AddToCartBtn />
+            <AddToCartBtn product={currentProduct} quantity={quantity} />
             <div className=" size-8 flex-center border rounded">
               <WishListBtn product={currentProduct} />
             </div>
