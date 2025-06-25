@@ -27,18 +27,33 @@ export const CartProvider = ({ children }) => {
     setCart((prevCart) => prevCart.filter((item) => item.id !== productID));
   };
 
-  // // increment quantity
-  // const incrementQuantity = () => setNewQty((prev) => prev + 1);
-  // // decrement quantity
-  // const decrementQuantity = () =>
-  //   setNewQty((prev) => (prev <= 1 ? 1 : prev - 1));
+  // increment quantity
+  const incrementQuantity = (productId, qty) =>
+    setCart((prev) =>
+      prev.map((item) =>
+        item.id === productId
+          ? { ...item, quantity: item.quantity + qty }
+          : { ...item }
+      )
+    );
 
+  // decrement quantity
+  const decrementQuantity = (productId, qty) =>
+    setCart((prev) =>
+      prev.map((item) =>
+        item.id === productId
+          ? { ...item, quantity: item.quantity - qty }
+          : { ...item }
+      )
+    );
   useEffect(() => {
     localStorage.setItem("myCart", JSON.stringify(cart));
   }, [cart]);
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, DeleteProductFromCart }}>
+    <CartContext.Provider
+      value={{ cart, addToCart, DeleteProductFromCart, incrementQuantity }}
+    >
       {children}
     </CartContext.Provider>
   );
