@@ -7,7 +7,7 @@ export default function MainLayout() {
   return (
     <>
       <Header />
-      <main>
+      <main className="px-2 py-1">
         <Outlet />
       </main>
       <Footer />
