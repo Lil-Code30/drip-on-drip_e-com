@@ -1,8 +1,11 @@
 import { useCart } from "../contexts/CartContext";
-import QuantityBox from "../components/QuantityBox";
 
 export default function CartElement({ item }) {
-  const { DeleteProductFromCart } = useCart();
+  const { DeleteProductFromCart, incrementQuantity, decrementQuantity } =
+    useCart();
+
+  let subTotal = item.quantity * item.price;
+
   return (
     <tr key={item.id} className="text-sm">
       <td>
@@ -17,9 +20,39 @@ export default function CartElement({ item }) {
       </td>
       <td className="px-0.5">{item.price} $CAD</td>
       <td className="px-0.5">
-        <QuantityBox key={item.id} quantity={item.quantity} />
+        <div className="border rounded-lg flex item-center justify-between px-1 w-20 h-8">
+          <button onClick={() => decrementQuantity(item.id)}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="size-5"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14" />
+            </svg>
+          </button>
+          <span className="align-middle flex-center ">{item.quantity}</span>
+          <button onClick={() => incrementQuantity(item.id)}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="size-5"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 4.5v15m7.5-7.5h-15"
+              />
+            </svg>
+          </button>
+        </div>
       </td>
-      <td className="px-0.5">{item.quantity * item.price} $CAD</td>
+      <td className="px-0.5">{subTotal.toFixed(2)} $CAD</td>
       <td className="px-0.5 text-red-600">
         <button
           className="hover:cursor-pointer"
