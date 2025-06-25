@@ -10,6 +10,18 @@ export default function Cart() {
     return <CartElement key={item.id} item={item} />;
   });
 
+  let subTotal = 0;
+
+  cart.map((el) => {
+    el.price * el.quantity;
+    subTotal = subTotal + el.price * el.quantity;
+  });
+
+  let GST = (5 / 100) * subTotal;
+  let QST = (9.975 / 100) * subTotal;
+  let tax = GST + QST;
+  let total = subTotal + GST + QST;
+
   return (
     <>
       {cart.length > 0 ? (
@@ -30,11 +42,59 @@ export default function Cart() {
               </thead>
               <tbody>{cartElements}</tbody>
             </table>
-            <div className="flex items-center justify-between px-2 py-2 border-t border-gray-400">
-              <Link
-                to="/shop"
-                className="flex  gap-x-1 border-2 py-1 px-1.5 border-blue-500 text-blue-500 font-medium text-md hover:bg-blue-500 hover:text-white transition-all duration-300 ease-in"
+            <hr className="border-gray-400" />
+            <Link
+              to="/shop"
+              className="flex  gap-x-1 border-2 py-1 ml-2 mt-3 w-1/3 px-1.5 border-blue-500 text-blue-500 font-medium text-md hover:bg-blue-500 hover:text-white transition-all duration-300 ease-in"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="size-6"
               >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                />
+              </svg>
+              <span>Return to Shop</span>
+            </Link>
+          </div>
+          <div className="md:w-1/3 flex flex-col gap-y-5">
+            <div className="border border-gray-400 pb-2.5">
+              <h2 className="text-lg py-2 pl-2 font-medium">Cart Totals</h2>
+              <h3 className="flex justify-between items-center m-3">
+                <span className="font-normal text-gray-500">Sub-total</span>{" "}
+                <span className="font-medium">{subTotal.toFixed(2)} $CAD</span>
+              </h3>
+              <h3 className="flex justify-between items-center m-3">
+                <span className="font-normal text-gray-500">Shipping</span>{" "}
+                <span className="font-medium">Free</span>
+              </h3>
+              <h3 className="flex justify-between items-center m-3">
+                <span className="font-normal text-gray-500">Discount</span>{" "}
+                <span className="font-medium">0 $CAD</span>
+              </h3>
+              <h3 className="flex justify-between items-center m-3">
+                <span className="font-normal text-gray-500">Tax</span>{" "}
+                <span className="font-medium">{tax.toFixed(2)} $CAD</span>
+              </h3>
+              <hr className="mx-3 border border-gray-400 my-2" />
+              <h3 className="flex justify-between items-center m-3">
+                <span className="font-medium text-xl ">Total</span>{" "}
+                <span className="font-semibold text-xl">
+                  {total.toFixed(2)} $CAD
+                </span>
+              </h3>
+              <Link
+                to="/checkout"
+                className="flex items-center justify-center gap-x-1 mx-3 bg-orange-500 text-white h-9 rounded font-medium"
+              >
+                <span>Proceed to Checkout</span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -46,19 +106,10 @@ export default function Cart() {
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                    d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3"
                   />
                 </svg>
-                <span>Return to Shop</span>
               </Link>
-              <button className="border-2 py-1 px-1.5 border-blue-500 text-blue-500 font-medium text-md hover:bg-blue-500 hover:text-white transition-all duration-300 ease-in">
-                Update Cart
-              </button>
-            </div>
-          </div>
-          <div className="md:w-1/3 flex flex-col gap-y-5">
-            <div className="border border-gray-400">
-              <h2 className="text-lg py-2 pl-2 font-medium">Card Totals</h2>
             </div>
             <div className="border border-gray-400">
               <h2 className="border-b border-gray-400 text-lg py-2 pl-2 font-medium">
