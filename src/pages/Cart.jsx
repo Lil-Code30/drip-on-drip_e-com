@@ -21,6 +21,11 @@ export default function Cart() {
   let QST = (9.975 / 100) * subTotal;
   let tax = GST + QST;
   let total = subTotal + GST + QST;
+  const dataInfos = {
+    tax: tax.toFixed(2),
+    total: total.toFixed(2),
+    subtotal: subTotal.toFixed(2),
+  };
 
   return (
     <>
@@ -92,6 +97,9 @@ export default function Cart() {
               </h3>
               <Link
                 to="/checkout"
+                state={{
+                  dataInfos,
+                }}
                 className="flex items-center justify-center gap-x-1 mx-3 bg-orange-500 text-white h-9 rounded font-medium"
               >
                 <span>Proceed to Checkout</span>

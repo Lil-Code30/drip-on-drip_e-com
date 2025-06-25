@@ -9,6 +9,7 @@ import Contact from "../pages/forms/Contact";
 import Login from "../pages/forms/Login";
 import SignUp from "../pages/forms/SignUp";
 import Cart from "../pages/Cart";
+import Checkout from "../pages/Checkout";
 import WishList from "../pages/WishList";
 import NotFound from "../pages/NotFound";
 
@@ -25,6 +26,7 @@ export default function AppRouter() {
           <Route path="login" element={<Login />} />
           <Route path="signup" element={<SignUp />} />
           <Route path="cart" element={<Cart />} />
+          <Route path="checkout" element={<Checkout />} />
           <Route path="wishlist" element={<WishList />} />
           <Route path="*" element={<NotFound />} />
         </Route>
