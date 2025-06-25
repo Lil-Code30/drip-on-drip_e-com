@@ -1,6 +1,6 @@
 import { useCart } from "../contexts/CartContext";
 
-export default function AddToCartBtn({ product, quantity = 1 }) {
+export default function AddToCartBtn({ product, quantity }) {
   const { addToCart } = useCart();
   const productToCart = {
     id: product.id,

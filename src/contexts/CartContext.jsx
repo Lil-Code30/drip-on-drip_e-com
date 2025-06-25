@@ -11,10 +11,11 @@ export const CartProvider = ({ children }) => {
     const productInCart = cart.find((item) => item.id === product.id);
     if (productInCart) {
       setCart((prevCart) =>
-        prevCart.map((item) => ({
-          ...item,
-          quantity: item.quantity + product.quantity,
-        }))
+        prevCart.map((item) =>
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + product.quantity.toFixed(1) }
+            : { ...item }
+        )
       );
     } else {
       setCart((prevCart) => [...prevCart, product]);
