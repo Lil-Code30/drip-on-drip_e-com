@@ -21,12 +21,23 @@ export const CartProvider = ({ children }) => {
     }
   };
 
+  // delete product from cart
+  const DeleteProductFromCart = (productID) => {
+    setCart((prevCart) => prevCart.filter((item) => item.id !== productID));
+  };
+
+  // // increment quantity
+  // const incrementQuantity = () => setNewQty((prev) => prev + 1);
+  // // decrement quantity
+  // const decrementQuantity = () =>
+  //   setNewQty((prev) => (prev <= 1 ? 1 : prev - 1));
+
   useEffect(() => {
     localStorage.setItem("myCart", JSON.stringify(cart));
   }, [cart]);
 
   return (
-    <CartContext.Provider value={{ cart, addToCart }}>
+    <CartContext.Provider value={{ cart, addToCart, DeleteProductFromCart }}>
       {children}
     </CartContext.Provider>
   );
