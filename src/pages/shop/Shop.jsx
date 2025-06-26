@@ -29,6 +29,7 @@ export default function Shop() {
     setSelectedCategories([]);
     setPriceRange({ min: 0, max: 500 });
     setRating(1);
+    setSortBy("latest");
   };
 
   // filtered and sorted data
@@ -44,8 +45,25 @@ export default function Shop() {
       return filteredCategories && filteredPriceRange && filteredRating;
     });
 
-    return filteredProducts;
-  }, [selectedCategories, priceRange, allProducts, rating]);
+    return filteredProducts.sort((a, b) => {
+      switch (sortBy) {
+        case "latest":
+          return new Date(b.meta.createdAt) - new Date(a.meta.createdAt);
+        case "highest-rated":
+          return b.rating - a.rating;
+        case "highest-price":
+          return b.price - a.price;
+        case "lowest-price":
+          return a.price - b.price;
+        case "a-z":
+          return a.title.localeCompare(b.title);
+        case "z-a":
+          return b.title.localeCompare(a.title);
+        default:
+          return 0;
+      }
+    });
+  }, [selectedCategories, priceRange, allProducts, rating, sortBy]);
   const productsEl = filteredSortedProducts.map((product) => {
     return <ProductCard key={product.id} product={product} />;
   });
@@ -83,7 +101,7 @@ export default function Shop() {
                 const c = category.split("-").join(" ");
                 const categoryName = c[0].toUpperCase() + c.slice(1);
                 return (
-                  <span className="flex items-center gap-x-0.5 ">
+                  <span key={category} className="flex items-center gap-x-0.5 ">
                     <input
                       type="checkbox"
                       name={category}
