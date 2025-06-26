@@ -1,6 +1,6 @@
 import { useProducts } from "../../contexts/ProductsContext";
 import ProductCard from "../../components/ProductCard";
-import { Funnel } from "lucide-react";
+import { Funnel, SpaceIcon, Star } from "lucide-react";
 
 export default function Shop() {
   const { allProducts } = useProducts();
@@ -36,10 +36,12 @@ export default function Shop() {
             <h2 className="text-lg font-semibold">Categories</h2>
             <div className="flex flex-col gap-y-0.5 mt-1">
               {categories.map((category) => {
+                const c = category.split("-").join(" ");
+                const categoryName = c[0].toUpperCase() + c.slice(1);
                 return (
                   <span className="flex items-center gap-x-0.5">
-                    <input type="checkbox" name={category} />
-                    <label>{category}</label>
+                    <input type="checkbox" name={category} id={category} />
+                    <label htmlFor={category}>{categoryName}</label>
                   </span>
                 );
               })}
@@ -61,6 +63,28 @@ export default function Shop() {
               />
             </div>
             <input type="range" min={0} max={500} className="w-full" />
+            <div>
+              <h2 className="text-lg font-semibold">Ratings</h2>
+              <div className="flex flex-col gap-y-1 mt-0.5">
+                {[1, 2, 3, 4, 5].map((rate) => {
+                  return (
+                    <span key={rate} className="flex items-center gap-x-1">
+                      <input type="radio" name="rating" id={`rating-${rate}`} />
+                      <label
+                        htmlFor={`rating-${rate}`}
+                        className="flex items-center gap-x-0.5"
+                      >
+                        <Star
+                          size={18}
+                          className="fill-yellow-400 stroke-amber-400"
+                        />{" "}
+                        {rate}+
+                      </label>
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
           </form>
         </aside>
         <div className="flex flex-col">
