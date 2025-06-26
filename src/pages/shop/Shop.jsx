@@ -1,13 +1,14 @@
 import { useState, useMemo } from "react";
 import { useProducts } from "../../contexts/ProductsContext";
 import ProductCard from "../../components/ProductCard";
-import { Funnel, Star } from "lucide-react";
+import { Funnel, Star, AlignLeft } from "lucide-react";
 
 export default function Shop() {
   const [sortBy, setSortBy] = useState("latest");
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [priceRange, setPriceRange] = useState({ min: 0, max: 500 });
   const [rating, setRating] = useState(1);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const categories = ["mens-shirts", "mens-shoes"];
   const { allProducts } = useProducts();
@@ -80,8 +81,21 @@ export default function Shop() {
           </p>
         </div>
       </div>
-      <section className="p-3 md:px-5 pt-5 flex gap-x-3 ">
-        <aside className="w-1/3">
+      <div className="md:hidden">
+        <button
+          onClick={() => setMenuOpen((prev) => !prev)}
+          title="open filter menu"
+          className="hover:cursor-pointer mt-5  border-2 rounded p-0.5 flex-center"
+        >
+          <AlignLeft />
+        </button>
+      </div>
+      <section className="relative p-3 md:pt-2 md:px-5  flex gap-x-3 ">
+        <aside
+          className={`${
+            menuOpen ? "absolute" : "hidden md:block"
+          }  md:relative z-99 bg-white md:bg-transparent p-2 border md:border-0 rounded w-[250px] md:w-1/3`}
+        >
           <div className="flex items-center gap-x-1.5">
             <h2 className="flex-center text-2xl font-semibold pr-2">
               <Funnel />
