@@ -1,14 +1,55 @@
+import { useState, useMemo } from "react";
 import { useProducts } from "../../contexts/ProductsContext";
 import ProductCard from "../../components/ProductCard";
-import { Funnel, SpaceIcon, Star } from "lucide-react";
+import { Funnel, Star } from "lucide-react";
 
 export default function Shop() {
-  const { allProducts } = useProducts();
+  const [sortBy, setSortBy] = useState("latest");
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [priceRange, setPriceRange] = useState({ min: 0, max: 500 });
+  const [rating, setRating] = useState(1);
 
   const categories = ["mens-shirts", "mens-shoes"];
-  const productsEl = allProducts.map((product) => {
+  const { allProducts } = useProducts();
+
+  //handle category change
+  const handleCategory = (cat) => {
+    // verify if the  category is inside the selected categories array
+    const categoryIn = selectedCategories.includes(cat);
+    if (categoryIn) {
+      // remove the category if true
+      setSelectedCategories((prev) => prev.filter((c) => c !== cat));
+    } else {
+      // add the category if false
+      setSelectedCategories((prev) => [...prev, cat]);
+    }
+  };
+  // function to clear the filters
+  const clearFilters = () => {
+    setSelectedCategories([]);
+    setPriceRange({ min: 0, max: 500 });
+    setRating(1);
+  };
+
+  // filtered and sorted data
+  const filteredSortedProducts = useMemo(() => {
+    const filteredProducts = allProducts.filter((product) => {
+      const filteredCategories =
+        selectedCategories.length === 0 ||
+        selectedCategories.includes(product.category);
+      const filteredPriceRange =
+        product.price >= priceRange.min && product.price <= priceRange.max;
+      const filteredRating = product.rating >= rating;
+
+      return filteredCategories && filteredPriceRange && filteredRating;
+    });
+
+    return filteredProducts;
+  }, [selectedCategories, priceRange, allProducts, rating]);
+  const productsEl = filteredSortedProducts.map((product) => {
     return <ProductCard key={product.id} product={product} />;
   });
+
   return (
     <section>
       <div className="flex py-10 px-15 bg-black text-white">
@@ -28,7 +69,10 @@ export default function Shop() {
               <Funnel />
               Filters
             </h2>
-            <button className="hover:cursor-pointer underline text-sm text-gray-400">
+            <button
+              onClick={clearFilters}
+              className="hover:cursor-pointer underline text-sm text-gray-400"
+            >
               Clear filter
             </button>
           </div>
@@ -39,44 +83,86 @@ export default function Shop() {
                 const c = category.split("-").join(" ");
                 const categoryName = c[0].toUpperCase() + c.slice(1);
                 return (
-                  <span className="flex items-center gap-x-0.5">
-                    <input type="checkbox" name={category} id={category} />
-                    <label htmlFor={category}>{categoryName}</label>
+                  <span className="flex items-center gap-x-0.5 ">
+                    <input
+                      type="checkbox"
+                      name={category}
+                      id={category}
+                      value={category}
+                      checked={selectedCategories.includes(category)}
+                      onChange={() => handleCategory(category)}
+                      className="hover:cursor-pointer"
+                    />
+                    <label htmlFor={category} className="hover:cursor-pointer">
+                      {categoryName}
+                    </label>
                   </span>
                 );
               })}
             </div>
-            <h2 className="text-lg font-semibold">Price Range</h2>
-            <div className="flex items-center gap-x-1 mt-1 mb-2">
-              <input
-                className="w-full border border-gray-400 rounded pl-0.5"
-                type="number"
-                name="minPrice"
-                min={0}
-              />
-              <input
-                className="w-full border border-gray-400 rounded pl-0.5"
-                type="number"
-                name="maxPrice"
-                min={0}
-                max={500}
-              />
+            <h2 className="text-lg font-semibold mt-1">Price Range</h2>
+            <div className="flex items-center gap-x-1 mb-2">
+              <label className="w-full">
+                Min Price
+                <input
+                  className="w-full border border-gray-400 rounded pl-0.5"
+                  type="number"
+                  name="minPrice"
+                  value={priceRange.min}
+                  min={0}
+                  max={500}
+                  onChange={(e) =>
+                    setPriceRange({ ...priceRange, min: e.target.value })
+                  }
+                />
+              </label>
+              <label className="w-full">
+                Max Price
+                <input
+                  className="w-full border border-gray-400 rounded pl-0.5"
+                  type="number"
+                  name="maxPrice"
+                  value={priceRange.max}
+                  min={0}
+                  max={500}
+                  onChange={(e) =>
+                    setPriceRange({ ...priceRange, max: e.target.value })
+                  }
+                />
+              </label>
             </div>
-            <input type="range" min={0} max={500} className="w-full" />
+            <input
+              type="range"
+              value={priceRange.max}
+              min={priceRange.min}
+              max={500}
+              onChange={(e) =>
+                setPriceRange({ ...priceRange, max: e.target.value })
+              }
+              className="w-full"
+            />
             <div>
               <h2 className="text-lg font-semibold">Ratings</h2>
               <div className="flex flex-col gap-y-1 mt-0.5">
-                {[1, 2, 3, 4, 5].map((rate) => {
+                {[1, 2, 3, 4].map((rate) => {
                   return (
                     <span key={rate} className="flex items-center gap-x-1">
-                      <input type="radio" name="rating" id={`rating-${rate}`} />
+                      <input
+                        type="radio"
+                        name="rating"
+                        value={rate}
+                        checked={rate === rating}
+                        id={`rating-${rate}`}
+                        className="hover:cursor-pointer"
+                        onChange={(e) => setRating(Number(e.target.value))}
+                      />
                       <label
                         htmlFor={`rating-${rate}`}
-                        className="flex items-center gap-x-0.5"
+                        className="flex items-center gap-x-0.5 hover:cursor-pointer"
                       >
                         <Star
                           size={18}
-                          className="fill-yellow-400 stroke-amber-400"
+                          className="fill-yellow-400 stroke-amber-400 "
                         />{" "}
                         {rate}+
                       </label>
@@ -87,13 +173,19 @@ export default function Shop() {
             </div>
           </form>
         </aside>
-        <div className="flex flex-col">
+        <div className="flex flex-col w-full">
           <div className="self-end-safe">
             <form className="border w-fit my-1.5 flex justify-between px-1 ">
               <label htmlFor="sort" className="text-gray-400 mr-1">
                 Sort By
               </label>
-              <select name="sort" id="sort" className="font-semibold">
+              <select
+                name="sort"
+                id="sort"
+                value={sortBy}
+                className="font-semibold"
+                onChange={(e) => setSortBy(e.target.value)}
+              >
                 <option value="latest">Latest</option>
                 <option value="highest-rated">Highest Rated</option>
                 <option value="highest-price">Price: High to Low</option>
@@ -103,13 +195,20 @@ export default function Shop() {
               </select>
             </form>
             <p className="text-md mb-2">
-              Showing {allProducts.length} of {allProducts.length} Products
+              Showing {filteredSortedProducts.length} of {allProducts.length}{" "}
+              Products
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 p-3 bg-red-100/30">
-            {productsEl}
-          </div>
+          {filteredSortedProducts.length > 0 ? (
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 p-3 bg-red-100/30">
+              {productsEl}
+            </div>
+          ) : (
+            <div className="bg-red-100/30 size-full flex-center h-[50dvh]">
+              <h1 className="text-xl">No Product matches the Filters apply</h1>
+            </div>
+          )}
         </div>
       </section>
     </section>
