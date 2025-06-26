@@ -1,9 +1,11 @@
 import { useProducts } from "../../contexts/ProductsContext";
 import ProductCard from "../../components/ProductCard";
+import { Funnel } from "lucide-react";
 
 export default function Shop() {
   const { allProducts } = useProducts();
 
+  const categories = ["mens-shirts", "mens-shoes"];
   const productsEl = allProducts.map((product) => {
     return <ProductCard key={product.id} product={product} />;
   });
@@ -22,7 +24,10 @@ export default function Shop() {
       <section className="p-3 md:px-5 pt-5 flex gap-x-3 ">
         <aside className="w-1/3">
           <div className="flex items-center gap-x-1.5">
-            <h2 className="text-2xl font-semibold pr-2">Filters</h2>
+            <h2 className="flex-center text-2xl font-semibold pr-2">
+              <Funnel />
+              Filters
+            </h2>
             <button className="hover:cursor-pointer underline text-sm text-gray-400">
               Clear filter
             </button>
@@ -30,34 +35,55 @@ export default function Shop() {
           <form action="" className="mt-2">
             <h2 className="text-lg font-semibold">Categories</h2>
             <div className="flex flex-col gap-y-0.5 mt-1">
-              <label>
-                <input type="checkbox" name="men-shirts" id="men-shirts" /> Men
-                Shirts
-              </label>
-              <label>
-                <input type="checkbox" name="men-shoes" id="men-shoes" /> Men
-                Shoes
-              </label>
+              {categories.map((category) => {
+                return (
+                  <span className="flex items-center gap-x-0.5">
+                    <input type="checkbox" name={category} />
+                    <label>{category}</label>
+                  </span>
+                );
+              })}
             </div>
+            <h2 className="text-lg font-semibold">Price Range</h2>
+            <div className="flex items-center gap-x-1 mt-1 mb-2">
+              <input
+                className="w-full border border-gray-400 rounded pl-0.5"
+                type="number"
+                name="minPrice"
+                min={0}
+              />
+              <input
+                className="w-full border border-gray-400 rounded pl-0.5"
+                type="number"
+                name="maxPrice"
+                min={0}
+                max={500}
+              />
+            </div>
+            <input type="range" min={0} max={500} className="w-full" />
           </form>
         </aside>
         <div className="flex flex-col">
           <div className="self-end-safe">
-            <form className="border w-[180px] my-1.5 flex justify-between px-1 ">
-              <label htmlFor="sort" className="text-gray-400">
+            <form className="border w-fit my-1.5 flex justify-between px-1 ">
+              <label htmlFor="sort" className="text-gray-400 mr-1">
                 Sort By
               </label>
               <select name="sort" id="sort" className="font-semibold">
-                <option disabled>--select--</option>
-                <option value="popular">Popular</option>
                 <option value="latest">Latest</option>
-                <option value="increasing-order">A - Z</option>
-                <option value="decreasing-order">Z - A</option>
+                <option value="highest-rated">Highest Rated</option>
+                <option value="highest-price">Price: High to Low</option>
+                <option value="lowest-price">Price: Low to High</option>
+                <option value="a-z">Name: A - Z</option>
+                <option value="z-a">Name: Z - A</option>
               </select>
             </form>
-            <p className="text-md mb-2">Showing 1003 Products</p>
+            <p className="text-md mb-2">
+              Showing {allProducts.length} of {allProducts.length} Products
+            </p>
           </div>
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-4 p-3 bg-red-100/30">
+
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 p-3 bg-red-100/30">
             {productsEl}
           </div>
         </div>
