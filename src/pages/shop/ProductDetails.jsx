@@ -1,5 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
 
 import ProductCard from "../../components/ProductCard";
 import AddToCartBtn from "../../components/AddToCartBtn";
