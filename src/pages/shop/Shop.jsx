@@ -1,10 +1,9 @@
 import { useState, useMemo } from "react";
-import { useProducts } from "../../contexts/ProductsContext";
 import ProductCard from "../../components/ProductCard";
 import Loading from "../../components/Loading";
 import Error from "../../components/Error";
 import { Funnel, Star, AlignLeft } from "lucide-react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { getAllProducts } from "../../api";
 
 export default function Shop() {
@@ -15,7 +14,6 @@ export default function Shop() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const categories = ["mens-shirts", "mens-shoes"];
-  const queryClient = useQueryClient();
 
   const { data, isFetching, isError } = useQuery({
     queryKey: ["products", selectedCategories, priceRange, rating],
@@ -44,46 +42,30 @@ export default function Shop() {
     setRating(1);
     setSortBy("latest");
   };
-  // const handleRefresh = () => {
-  //   // Invalidate and refetch all queries with 'users' key
-  //   queryClient.invalidateQueries(["products"]);
-  // };
 
-  // // filtered and sorted data
-  // const filteredSortedProducts = useMemo(() => {
-  //   const filteredProducts = allProducts.filter((product) => {
-  //     const filteredCategories =
-  //       selectedCategories.length === 0 ||
-  //       selectedCategories.includes(product.category);
-  //     const filteredPriceRange =
-  //       product.price >= priceRange.min && product.price <= priceRange.max;
-  //     const filteredRating = product.rating >= rating;
-
-  //     return filteredCategories && filteredPriceRange && filteredRating;
-  //   });
-
-  //   return filteredProducts.sort((a, b) => {
-  //     switch (sortBy) {
-  //       case "latest":
-  //         return new Date(b.meta.createdAt) - new Date(a.meta.createdAt);
-  //       case "highest-rated":
-  //         return b.rating - a.rating;
-  //       case "highest-price":
-  //         return b.price - a.price;
-  //       case "lowest-price":
-  //         return a.price - b.price;
-  //       case "a-z":
-  //         return a.title.localeCompare(b.title);
-  //       case "z-a":
-  //         return b.title.localeCompare(a.title);
-  //       default:
-  //         return 0;
-  //     }
-  //   });
-  // }, [selectedCategories, priceRange, allProducts, rating, sortBy]);
-  // const productsEl = filteredSortedProducts.map((product) => {
-  //   return <ProductCard key={product.id} product={product} />;
-  // });
+  //  sorted data
+  const SortedProducts = useMemo(() => {
+    if (data) {
+      return data.sort((a, b) => {
+        switch (sortBy) {
+          case "latest":
+            return new Date(b.createdAt) - new Date(a.createdAt);
+          case "highest-rated":
+            return b.rating - a.rating;
+          case "highest-price":
+            return b.price - a.price;
+          case "lowest-price":
+            return a.price - b.price;
+          case "a-z":
+            return a.name.localeCompare(b.name);
+          case "z-a":
+            return b.name.localeCompare(a.name);
+          default:
+            return 0;
+        }
+      });
+    }
+  }, [data, sortBy]);
 
   return (
     <section>
@@ -260,9 +242,9 @@ export default function Shop() {
             <div className="bg-red-100/30 size-full flex-center h-[50dvh]">
               <Error error="Error when fetching products from the db" />
             </div>
-          ) : data.length > 0 ? (
+          ) : SortedProducts.length > 0 ? (
             <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 p-3 bg-red-100/30">
-              {data.map((product) => (
+              {SortedProducts.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>
