@@ -1,7 +1,11 @@
 import { useState, useMemo } from "react";
 import { useProducts } from "../../contexts/ProductsContext";
 import ProductCard from "../../components/ProductCard";
+import Loading from "../../components/Loading";
+import Error from "../../components/Error";
 import { Funnel, Star, AlignLeft } from "lucide-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { getAllProducts } from "../../api";
 
 export default function Shop() {
   const [sortBy, setSortBy] = useState("latest");
@@ -11,7 +15,15 @@ export default function Shop() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const categories = ["mens-shirts", "mens-shoes"];
-  const { allProducts } = useProducts();
+  const queryClient = useQueryClient();
+
+  const { data, isFetching, isError } = useQuery({
+    queryKey: ["products", selectedCategories, priceRange, rating],
+    queryFn: async () => {
+      const data = await getAllProducts(selectedCategories, priceRange, rating);
+      return data;
+    },
+  });
 
   //handle category change
   const handleCategory = (cat) => {
@@ -32,42 +44,46 @@ export default function Shop() {
     setRating(1);
     setSortBy("latest");
   };
+  // const handleRefresh = () => {
+  //   // Invalidate and refetch all queries with 'users' key
+  //   queryClient.invalidateQueries(["products"]);
+  // };
 
-  // filtered and sorted data
-  const filteredSortedProducts = useMemo(() => {
-    const filteredProducts = allProducts.filter((product) => {
-      const filteredCategories =
-        selectedCategories.length === 0 ||
-        selectedCategories.includes(product.category);
-      const filteredPriceRange =
-        product.price >= priceRange.min && product.price <= priceRange.max;
-      const filteredRating = product.rating >= rating;
+  // // filtered and sorted data
+  // const filteredSortedProducts = useMemo(() => {
+  //   const filteredProducts = allProducts.filter((product) => {
+  //     const filteredCategories =
+  //       selectedCategories.length === 0 ||
+  //       selectedCategories.includes(product.category);
+  //     const filteredPriceRange =
+  //       product.price >= priceRange.min && product.price <= priceRange.max;
+  //     const filteredRating = product.rating >= rating;
 
-      return filteredCategories && filteredPriceRange && filteredRating;
-    });
+  //     return filteredCategories && filteredPriceRange && filteredRating;
+  //   });
 
-    return filteredProducts.sort((a, b) => {
-      switch (sortBy) {
-        case "latest":
-          return new Date(b.meta.createdAt) - new Date(a.meta.createdAt);
-        case "highest-rated":
-          return b.rating - a.rating;
-        case "highest-price":
-          return b.price - a.price;
-        case "lowest-price":
-          return a.price - b.price;
-        case "a-z":
-          return a.title.localeCompare(b.title);
-        case "z-a":
-          return b.title.localeCompare(a.title);
-        default:
-          return 0;
-      }
-    });
-  }, [selectedCategories, priceRange, allProducts, rating, sortBy]);
-  const productsEl = filteredSortedProducts.map((product) => {
-    return <ProductCard key={product.id} product={product} />;
-  });
+  //   return filteredProducts.sort((a, b) => {
+  //     switch (sortBy) {
+  //       case "latest":
+  //         return new Date(b.meta.createdAt) - new Date(a.meta.createdAt);
+  //       case "highest-rated":
+  //         return b.rating - a.rating;
+  //       case "highest-price":
+  //         return b.price - a.price;
+  //       case "lowest-price":
+  //         return a.price - b.price;
+  //       case "a-z":
+  //         return a.title.localeCompare(b.title);
+  //       case "z-a":
+  //         return b.title.localeCompare(a.title);
+  //       default:
+  //         return 0;
+  //     }
+  //   });
+  // }, [selectedCategories, priceRange, allProducts, rating, sortBy]);
+  // const productsEl = filteredSortedProducts.map((product) => {
+  //   return <ProductCard key={product.id} product={product} />;
+  // });
 
   return (
     <section>
@@ -203,6 +219,12 @@ export default function Shop() {
                 })}
               </div>
             </div>
+            <button
+              type="submit"
+              className="my-3 border rounded bg-green-600 font-inter px-2 text-white"
+            >
+              Apply filter
+            </button>
           </form>
         </aside>
         <div className="flex flex-col w-full">
@@ -226,15 +248,23 @@ export default function Shop() {
                 <option value="z-a">Name: Z - A</option>
               </select>
             </form>
-            <p className="text-md mb-2">
-              Showing {filteredSortedProducts.length} of {allProducts.length}{" "}
-              Products
-            </p>
+            {data && (
+              <p className="text-md mb-2">Showing {data.length} Products</p>
+            )}
           </div>
-
-          {filteredSortedProducts.length > 0 ? (
+          {isFetching ? (
+            <div className="bg-red-100/30 size-full flex-center h-[50dvh]">
+              <Loading />
+            </div>
+          ) : isError ? (
+            <div className="bg-red-100/30 size-full flex-center h-[50dvh]">
+              <Error error="Error when fetching products from the db" />
+            </div>
+          ) : data.length > 0 ? (
             <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 p-3 bg-red-100/30">
-              {productsEl}
+              {data.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
             </div>
           ) : (
             <div className="bg-red-100/30 size-full flex-center h-[50dvh]">
