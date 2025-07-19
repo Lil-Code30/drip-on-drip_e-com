@@ -6,6 +6,7 @@ const api = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
+//  function to fetch all the products
 export const getAllProducts = async (
   categories = "",
   priceRange = "",
@@ -38,8 +39,32 @@ export const getAllProducts = async (
     const { data } = res;
     return data;
   } catch (err) {
-    console.log(
-      `something when wrong when fetching all products ${err.message}`
-    );
+    console.log(`something when wrong when fetching all products ${err}`);
+  }
+};
+
+// function to find a product by id
+export const getProductById = async (id) => {
+  try {
+    const res = await api.get(`/products/${id}`);
+
+    const { data } = res;
+
+    return data;
+  } catch (err) {
+    console.log(`Error when fetching product by id ${err.message}`);
+  }
+};
+
+// function to search a product
+export const searchProduct = async (term) => {
+  try {
+    const res = await api.get(`products/search?q=${term}`);
+
+    const { data } = res;
+
+    return data;
+  } catch (err) {
+    console.log(`Error when searching for the product ${err.message}`);
   }
 };

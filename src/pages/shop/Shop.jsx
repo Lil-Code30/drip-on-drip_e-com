@@ -2,9 +2,10 @@ import { useState, useMemo } from "react";
 import ProductCard from "../../components/ProductCard";
 import Loading from "../../components/Loading";
 import Error from "../../components/Error";
+import SearchBar from "../../components/SearchBar";
 import { Funnel, Star, AlignLeft } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { getAllProducts } from "../../api";
+import { getAllProducts, searchProduct } from "../../api";
 
 export default function Shop() {
   const [sortBy, setSortBy] = useState("latest");
@@ -12,13 +13,27 @@ export default function Shop() {
   const [priceRange, setPriceRange] = useState({ min: 0, max: 500 });
   const [rating, setRating] = useState(1);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const categories = ["mens-shirts", "mens-shoes"];
 
-  const { data, isFetching, isError } = useQuery({
+  const productQuery = useQuery({
     queryKey: ["products", selectedCategories, priceRange, rating],
     queryFn: async () => {
       const data = await getAllProducts(selectedCategories, priceRange, rating);
+      return data;
+    },
+  });
+
+  // handle search term
+  const handleSearchTerm = (value) => {
+    setSearchTerm(value);
+  };
+
+  const searchTermQuery = useQuery({
+    queryKey: ["search", searchTerm],
+    queryFn: async () => {
+      const data = await searchProduct(searchTerm);
       return data;
     },
   });
@@ -45,8 +60,8 @@ export default function Shop() {
 
   //  sorted data
   const SortedProducts = useMemo(() => {
-    if (data) {
-      return data.sort((a, b) => {
+    if (productQuery.data) {
+      return productQuery.data.sort((a, b) => {
         switch (sortBy) {
           case "latest":
             return new Date(b.createdAt) - new Date(a.createdAt);
@@ -65,7 +80,7 @@ export default function Shop() {
         }
       });
     }
-  }, [data, sortBy]);
+  }, [productQuery.data, sortBy]);
 
   return (
     <section>
@@ -210,35 +225,65 @@ export default function Shop() {
           </form>
         </aside>
         <div className="flex flex-col w-full">
-          <div className="self-end-safe">
-            <form className="border w-fit my-1.5 flex justify-between px-1 ">
-              <label htmlFor="sort" className="text-gray-400 mr-1">
-                Sort By
-              </label>
-              <select
-                name="sort"
-                id="sort"
-                value={sortBy}
-                className="font-semibold"
-                onChange={(e) => setSortBy(e.target.value)}
-              >
-                <option value="latest">Latest</option>
-                <option value="highest-rated">Highest Rated</option>
-                <option value="highest-price">Price: High to Low</option>
-                <option value="lowest-price">Price: Low to High</option>
-                <option value="a-z">Name: A - Z</option>
-                <option value="z-a">Name: Z - A</option>
-              </select>
-            </form>
-            {data && (
-              <p className="text-md mb-2">Showing {data.length} Products</p>
-            )}
+          <div className="flex w-full flex-col gap-y-3 md:flex-row items-center">
+            <div className="w-full mx-2 md:w-2/3">
+              <SearchBar
+                searchTerm={searchTerm}
+                handleSearchTerm={handleSearchTerm}
+              />
+            </div>
+            <div>
+              <form className="border w-fit my-1.5 flex justify-between px-1 ">
+                <label htmlFor="sort" className="text-gray-400 mr-1">
+                  Sort By
+                </label>
+                <select
+                  name="sort"
+                  id="sort"
+                  value={sortBy}
+                  className="font-semibold"
+                  onChange={(e) => setSortBy(e.target.value)}
+                >
+                  <option value="latest">Latest</option>
+                  <option value="highest-rated">Highest Rated</option>
+                  <option value="highest-price">Price: High to Low</option>
+                  <option value="lowest-price">Price: Low to High</option>
+                  <option value="a-z">Name: A - Z</option>
+                  <option value="z-a">Name: Z - A</option>
+                </select>
+              </form>
+              {productQuery.data && (
+                <p className="text-md mb-2">
+                  Showing {productQuery.data.length} Products
+                </p>
+              )}
+            </div>
           </div>
-          {isFetching ? (
+          {searchTerm ? (
+            searchTermQuery.isFetching ? (
+              <div className="bg-red-100/30 size-full flex-center h-[50dvh]">
+                <Loading />
+              </div>
+            ) : searchTermQuery.isError ? (
+              <div className="bg-red-100/30 size-full flex-center h-[50dvh]">
+                <Error error="Error when searching products from the db" />
+              </div>
+            ) : searchTermQuery.data.length > 0 ? (
+              <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 p-3 bg-red-100/30">
+                {searchTermQuery.data.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            ) : (
+              <div className="bg-red-100/30 size-full flex-center h-[50dvh]">
+                <h1 className="text-xl">No Product Found</h1>
+              </div>
+            )
+          ) : productQuery.isFetching ? (
             <div className="bg-red-100/30 size-full flex-center h-[50dvh]">
               <Loading />
             </div>
-          ) : isError ? (
+          ) : productQuery.isError ? (
             <div className="bg-red-100/30 size-full flex-center h-[50dvh]">
               <Error error="Error when fetching products from the db" />
             </div>

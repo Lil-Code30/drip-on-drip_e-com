@@ -7,11 +7,11 @@ export default function ProductCard({ product }) {
   const originalPrice = product.price / (1 - product.discountPercentage / 100);
   return (
     <Link
-      to={{ pathname: `/shop/product/${product.id}`, hash: "#top" }}
+      to={{ pathname: `/shop/product/${product.id}` }}
       className="bg-white shadow-sm rounded p-2 hover:shadow-xl transition-all duration-300 flex flex-col z-1"
     >
       <div className="relative w-fit border-1 border-black/50 mb-1 shadow-lg rounded">
-        <img className="" src={product.images[0]} alt={product.title} />
+        <img className="" src={product.images[0]} alt={product.name} />
         {product.discountPercentage.toFixed() > 0 ? (
           <div className="absolute -top-1 -left-1 bg-yellow-400 w-auto px-1 text-md rounded-sm flex-center">
             <span>{discountPercent}</span>
@@ -21,7 +21,7 @@ export default function ProductCard({ product }) {
           <WishListBtn product={product} />
         </div>
       </div>
-      <h1 className="font-inter font-bold mt-1.5">{product.title}</h1>
+      <h1 className="font-inter font-bold mt-1.5">{product.name}</h1>
       <p className="line-clamp-2 mb-1.5">{product.description}</p>
       <div className="mt-auto">
         {product.discountPercentage.toFixed() > 0 ? (

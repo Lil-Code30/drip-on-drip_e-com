@@ -7,11 +7,11 @@ export default function ProductDescription({ currentProduct }) {
         <tbody>
           <tr>
             <th className="text-left p-1">Category:</th>
-            <td>{currentProduct.category}</td>
+            <td>{currentProduct.category.name}</td>
           </tr>
           <tr>
             <th className="text-left p-1">Brand:</th>
-            <td>{currentProduct.brand}</td>
+            <td>{currentProduct.brand.name}</td>
           </tr>
           <tr>
             <th className="text-left p-1">Weight:</th>

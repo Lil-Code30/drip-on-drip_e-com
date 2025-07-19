@@ -1,8 +1,12 @@
 import { useParams, Link } from "react-router-dom";
 import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
+import { useQuery } from "@tanstack/react-query";
+import { getProductById } from "../../api";
 
 import ProductCard from "../../components/ProductCard";
+import Error from "../../components/Error";
+import Loading from "../../components/Loading";
 import AddToCartBtn from "../../components/AddToCartBtn";
 import WishListBtn from "../../components/WishListBtn";
 import QuantityBox from "../../components/QuantityBox";
@@ -13,6 +17,50 @@ import ProductReview from "../../components/ProductReview";
 export default function ProductDetails() {
   const { id } = useParams();
 
+  const { data, isFetching, isError } = useQuery({
+    queryKey: ["productsDetails"],
+    queryFn: async () => {
+      const data = await getProductById(id);
+      return data;
+    },
+  });
+  console.log(data);
+  let displayActiveTabContent;
+  let currentProduct;
+  let discountPercent;
+  let originalPrice;
+  if (data) {
+    currentProduct = data;
+    // function to display the component that is active
+    displayActiveTabContent = () => {
+      switch (activeTab) {
+        case "Description":
+          return <ProductDescription currentProduct={currentProduct} />;
+        case "Informations":
+          return <ProductAdditionalInfos currentProduct={currentProduct} />;
+        case "Reviews":
+          return <ProductReview reviews={currentProduct.reviews} />;
+        default:
+          return null;
+      }
+    };
+
+    discountPercent = currentProduct.discountPercentage.toFixed() + "% OFF";
+    originalPrice =
+      currentProduct.price / (1 - currentProduct.discountPercentage / 100);
+
+    //   const relatedProduct = allProducts
+    //   .filter(
+    //     (product) =>
+    //       product.category === currentProduct.category &&
+    //       product.id !== currentProduct.id
+    //   )
+    //   .slice(0, 4);
+
+    // const relatedProductEl = relatedProduct.map((product) => {
+    //   return <ProductCard key={product.id} product={product} />;
+    // });
+  }
   const [clothSizes, setClothSizes] = useState([
     { id: 1, size: "XS", selected: false },
     { id: 2, size: "S", selected: false },
@@ -44,40 +92,6 @@ export default function ProductDetails() {
   // decrement quantity
   const decrementQuantity = () =>
     setQuantity((prev) => (prev <= 1 ? 1 : prev - 1));
-
-  // function to display the component that is active
-  const displayActiveTabContent = () => {
-    switch (activeTab) {
-      case "Description":
-        return <ProductDescription currentProduct={currentProduct} />;
-      case "Informations":
-        return <ProductAdditionalInfos currentProduct={currentProduct} />;
-      case "Reviews":
-        return <ProductReview reviews={currentProduct.reviews} />;
-      default:
-        return null;
-    }
-  };
-
-  const allProducts = JSON.parse(localStorage.getItem("allProducts"));
-  const currentProduct = allProducts.find(
-    (product) => product.id === Number(id)
-  );
-  const relatedProduct = allProducts
-    .filter(
-      (product) =>
-        product.category === currentProduct.category &&
-        product.id !== currentProduct.id
-    )
-    .slice(0, 4);
-
-  const relatedProductEl = relatedProduct.map((product) => {
-    return <ProductCard key={product.id} product={product} />;
-  });
-
-  const discountPercent = currentProduct.discountPercentage.toFixed() + "% OFF";
-  const originalPrice =
-    currentProduct.price / (1 - currentProduct.discountPercentage / 100);
 
   // handle shoe size
   const handleShoeSizeChange = (id) => {
@@ -146,144 +160,160 @@ export default function ProductDetails() {
       <div>
         <p>
           <Link to="/">Home</Link> &gt; <Link to="../shop">Shop</Link> &gt;{" "}
-          <span>{currentProduct.title}</span>
+          <span>{data && currentProduct.name}</span>
         </p>
       </div>
-      <section className="container w-full mt-5 mb-3 mx-auto flex flex-col md:flex-row gap-3">
-        <div className=" md:w-[50%] grid grid-cols-3 gap-2">
-          <div className="col-span-3 border border-gray-300 bg-amber-50/50">
-            <img src={currentProduct.images[0]} alt={currentProduct.title} />
-          </div>
-          <div className="border border-gray-300 bg-amber-50/50">
-            <img src={currentProduct.images[1]} alt={currentProduct.title} />
-          </div>
-          <div className="border border-gray-300 bg-amber-50/50">
-            <img src={currentProduct.images[2]} alt={currentProduct.title} />
-          </div>
-          <div className="border border-gray-300 bg-amber-50/50">
-            <img src={currentProduct.images[3]} alt={currentProduct.title} />
-          </div>
+      {isFetching ? (
+        <div className=" size-full flex-center h-[50dvh]">
+          <Loading />
         </div>
-        <div className="md:w-[50%]">
-          {currentProduct.discountPercentage.toFixed() > 0 ? (
-            <div className=" bg-yellow-400 w-[100px] px-1 text-lg rounded-sm flex-center mb-2">
-              <span>{discountPercent}</span>
-            </div>
-          ) : null}
-          <h1 className="font-inter text-2xl md:text-3xl font-bold mt-1.5 md:mt-0">
-            {currentProduct.title}
-          </h1>
-          <span className="bg-gray-100 text-gray-800 text-[10px] font-medium me-2 px-2.5 py-0.5 rounded-sm">
-            sku : {currentProduct.sku}
-          </span>
-          <h2 className="my-2 flex justify-between items-center">
-            {currentProduct.discountPercentage.toFixed() > 0 ? (
-              <div className="flex items-center gap-1.5">
-                <span className="text-gray-400 line-through">
-                  ${originalPrice.toFixed(2)}
-                </span>
-                <span className="text-2xl text-blue-500 font-semibold">
-                  ${currentProduct.price.toFixed(2)}
-                </span>
+      ) : isError ? (
+        <div className=" size-full flex-center h-[50dvh]">
+          <Error error="Error when fetching product's details from the db" />
+        </div>
+      ) : (
+        <>
+          <section className="container w-full mt-5 mb-3 mx-auto flex flex-col md:flex-row gap-3">
+            <div className=" md:w-[50%] grid grid-cols-3 gap-2">
+              <div className="col-span-3 border border-gray-300 bg-amber-50/50">
+                <img src={currentProduct.images[0]} alt={currentProduct.name} />
               </div>
-            ) : (
-              <span className=" text-2xl text-blue-500 font-semibold">
-                ${currentProduct.price.toFixed(2)}
-              </span>
-            )}
-            {currentProduct.stock > 0 ? (
-              <span className="bg-green-200 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded-sm ">
-                in stock
-              </span>
-            ) : (
-              <span className="bg-red-100 text-red-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-red-900 dark:text-red-300">
-                not available
-              </span>
-            )}
-          </h2>
-          {currentProduct.stock > 4 ? (
-            <p className="flex items-center gap-0.5 text-sm text-gray-700 my-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="size-4 lucide lucide-box-icon lucide-box"
-              >
-                <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
-                <path d="m3.3 7 8.7 5 8.7-5" />
-                <path d="M12 22V12" />
-              </svg>{" "}
-              <span>
-                Only {currentProduct.stock} item&#40;s&#41; left in stock
-              </span>
-            </p>
-          ) : null}
-          <h3 className=" font-semibold mt-10">Select Size</h3>
-
-          <div className="my-2 flex flex-wrap gap-2">
-            {currentProduct.category.includes("shirts") ? (
-              clothSizesEl
-            ) : currentProduct.category.includes("shoes") ? (
-              shoesSizesEl
-            ) : (
-              <p>No Size Found</p>
-            )}
-          </div>
-          <div className="flex items-center my-2.5 w-full gap-x-2">
-            <QuantityBox
-              quantity={quantity}
-              incrementQuantity={incrementQuantity}
-              decrementQuantity={decrementQuantity}
-            />
-            <AddToCartBtn product={currentProduct} quantity={quantity} />
-            <div className=" size-8 flex-center border rounded">
-              <WishListBtn product={currentProduct} />
+              <div className="border border-gray-300 bg-amber-50/50">
+                <img src={currentProduct.images[1]} alt={currentProduct.name} />
+              </div>
+              <div className="border border-gray-300 bg-amber-50/50">
+                <img src={currentProduct.images[2]} alt={currentProduct.name} />
+              </div>
+              <div className="border border-gray-300 bg-amber-50/50">
+                <img src={currentProduct.images[3]} alt={currentProduct.name} />
+              </div>
             </div>
-          </div>
-          <hr />
-          <div className="hidden md:block">
-            <p className="font-semibold text-lg mt-3">Short Description: </p>
-            <p className="line-clamp-2">{currentProduct.description}</p>
-          </div>
-        </div>
-      </section>
-      <section className="my-5">
-        <div className="flex gap-x-2 text-lg w-full border-b-3 border-gray-100 mb-2">
-          <button
-            onClick={() => setActiveTab("Description")}
-            className={`hover:cursor-pointer ${
-              activeTab === "Description" ? "border-b-3 border-black" : ""
-            } `}
-          >
-            Description
-          </button>
-          <button
-            onClick={() => setActiveTab("Informations")}
-            className={`hover:cursor-pointer ${
-              activeTab === "Informations" ? "border-b-3 border-black" : ""
-            }`}
-          >
-            Additional Informations
-          </button>
-          <button
-            onClick={() => setActiveTab("Reviews")}
-            className={`hover:cursor-pointer ${
-              activeTab === "Reviews" ? "border-b-3 border-black" : ""
-            }`}
-          >
-            Reviews
-          </button>
-        </div>
-        <div>{displayActiveTabContent()}</div>
-      </section>
-      <section>
-        <h1 className="text-3xl font-semibold">Related Products</h1>
-        <div className="grid grid-cols-4 gap-x-2 my-3">{relatedProductEl}</div>
-      </section>
+            <div className="md:w-[50%]">
+              {currentProduct.discountPercentage.toFixed() > 0 ? (
+                <div className=" bg-yellow-400 w-[100px] px-1 text-lg rounded-sm flex-center mb-2">
+                  <span>{discountPercent}</span>
+                </div>
+              ) : null}
+              <h1 className="font-inter text-2xl md:text-3xl font-bold mt-1.5 md:mt-0">
+                {currentProduct.name}
+              </h1>
+              <span className="bg-gray-100 text-gray-800 text-[10px] font-medium me-2 px-2.5 py-0.5 rounded-sm">
+                sku : {currentProduct.sku}
+              </span>
+              <h2 className="my-2 flex justify-between items-center">
+                {currentProduct.discountPercentage.toFixed() > 0 ? (
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-gray-400 line-through">
+                      ${originalPrice.toFixed(2)}
+                    </span>
+                    <span className="text-2xl text-blue-500 font-semibold">
+                      ${currentProduct.price.toFixed(2)}
+                    </span>
+                  </div>
+                ) : (
+                  <span className=" text-2xl text-blue-500 font-semibold">
+                    ${currentProduct.price.toFixed(2)}
+                  </span>
+                )}
+                {currentProduct.stock > 0 ? (
+                  <span className="bg-green-200 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded-sm ">
+                    in stock
+                  </span>
+                ) : (
+                  <span className="bg-red-100 text-red-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-red-900 dark:text-red-300">
+                    not available
+                  </span>
+                )}
+              </h2>
+              {currentProduct.stock > 4 ? (
+                <p className="flex items-center gap-0.5 text-sm text-gray-700 my-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="size-4 lucide lucide-box-icon lucide-box"
+                  >
+                    <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+                    <path d="m3.3 7 8.7 5 8.7-5" />
+                    <path d="M12 22V12" />
+                  </svg>{" "}
+                  <span>
+                    Only {currentProduct.stock} item&#40;s&#41; left in stock
+                  </span>
+                </p>
+              ) : null}
+              <h3 className=" font-semibold mt-10">Select Size</h3>
+
+              <div className="my-2 flex flex-wrap gap-2">
+                {currentProduct.category.name.includes("shirts") ? (
+                  clothSizesEl
+                ) : currentProduct.category.name.includes("shoes") ? (
+                  shoesSizesEl
+                ) : (
+                  <p>No Size Found</p>
+                )}
+              </div>
+              <div className="flex items-center my-2.5 w-full gap-x-2">
+                <QuantityBox
+                  quantity={quantity}
+                  incrementQuantity={incrementQuantity}
+                  decrementQuantity={decrementQuantity}
+                />
+                <AddToCartBtn product={currentProduct} quantity={quantity} />
+                <div className=" size-8 flex-center border rounded">
+                  <WishListBtn product={currentProduct} />
+                </div>
+              </div>
+              <hr />
+              <div className="hidden md:block">
+                <p className="font-semibold text-lg mt-3">
+                  Short Description:{" "}
+                </p>
+                <p className="line-clamp-2">{currentProduct.description}</p>
+              </div>
+            </div>
+          </section>
+          <section className="my-5">
+            <div className="flex gap-x-2 text-lg w-full border-b-3 border-gray-100 mb-2">
+              <button
+                onClick={() => setActiveTab("Description")}
+                className={`hover:cursor-pointer ${
+                  activeTab === "Description" ? "border-b-3 border-black" : ""
+                } `}
+              >
+                Description
+              </button>
+              <button
+                onClick={() => setActiveTab("Informations")}
+                className={`hover:cursor-pointer ${
+                  activeTab === "Informations" ? "border-b-3 border-black" : ""
+                }`}
+              >
+                Additional Informations
+              </button>
+              <button
+                onClick={() => setActiveTab("Reviews")}
+                className={`hover:cursor-pointer ${
+                  activeTab === "Reviews" ? "border-b-3 border-black" : ""
+                }`}
+              >
+                Reviews
+              </button>
+            </div>
+            <div>{displayActiveTabContent()}</div>
+          </section>
+          {/* <section>
+            <h1 className="text-3xl font-semibold">Related Products</h1>
+            <div className="grid grid-cols-4 gap-x-2 my-3">
+              {relatedProductEl}
+            </div>
+          </section> */}
+        </>
+      )}
     </section>
   );
 }
