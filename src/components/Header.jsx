@@ -28,11 +28,11 @@ export default function Header() {
     );
   });
   return (
-    <header className="text-black relative  flex justify-between items-center md:px-1.5 py-3">
+    <header className="text-black relative  flex justify-between items-center px-0.5 md:px-1.5 py-3">
       <Link to="/" className="font-stalinst text-xl order-2 md:order-1">
         drip<span className="text-red-500 font-stalinst text-2xl">On</span>drip
       </Link>
-      <div className="order-1 md:order-2 ">
+      <div className="order-1 md:order-2  ">
         <label htmlFor="menu" className="peer md:hidden">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -58,34 +58,43 @@ export default function Header() {
             onChange={handleMenuChecked}
           />
         </label>
-        <nav className="hidden absolute top-0  md:relative peer-has-checked:flex md:flex flex-col md:flex-row gap-x-2  text-black  font-geist slide-in bg-red-500 md:bg-transparent z-9 h-[100dvh] w-[100dvw]  md:size-auto">
-          <div className="md:hidden flex items-center justify-between px-2 bg-white">
-            <Link to="/" className="font-stalinst text-xl ">
-              drip
-              <span className="text-red-500 font-stalinst text-2xl">On</span>
-              drip
-            </Link>
-            <button
-              onClick={handleMenuChecked}
-              className="hover:cursor-pointer  self-end-safe m-2 bg-red-500 rounded-full"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="size-6 stroke-white"
+        <nav className="hidden absolute top-0  md:relative peer-has-checked:flex md:flex flex-col justify-between md:flex-row gap-x-2  text-black  font-geist slide-in bg-red-500 md:bg-transparent z-9 h-[100dvh] w-[100dvw]  md:size-auto">
+          <div className="md:flex flex flex-col md:flex-row gap-x-2">
+            <div className="md:hidden flex items-center justify-between px-2 bg-white">
+              <Link to="/" className="font-stalinst text-xl ">
+                drip
+                <span className="text-red-500 font-stalinst text-2xl">On</span>
+                drip
+              </Link>
+              <button
+                onClick={handleMenuChecked}
+                className="hover:cursor-pointer  self-end-safe m-2 bg-red-500 rounded-full"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                />
-              </svg>
-            </button>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="size-6 stroke-white"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                  />
+                </svg>
+              </button>
+            </div>
+            {NavLinksEl}{" "}
           </div>
-          {NavLinksEl}{" "}
+          <Link
+            onClick={handleMenuChecked}
+            to="login"
+            className="nav-link  md:hidden mb-4  bg-blue-600 border-0 text-white "
+          >
+            Login
+          </Link>
         </nav>
       </div>
       <div className="flex items-center gap-x-2 justify-self-end-safe order-3">
@@ -127,7 +136,7 @@ export default function Header() {
         </Link>
         <Link
           to="login"
-          className="bg-black text-white font-semibold py-1 px-2 rounded hover:bg-white hover:border hover:text-black transition-all duration-300"
+          className="bg-black hidden md:block text-white font-semibold py-1 px-2 rounded hover:bg-white hover:border hover:text-black transition-all duration-300"
         >
           Login
         </Link>
