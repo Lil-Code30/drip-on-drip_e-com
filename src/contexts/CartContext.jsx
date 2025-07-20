@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
+import { showToast } from "../components/ToastNotify";
 
 const CartContext = createContext();
 
@@ -25,6 +26,7 @@ export const CartProvider = ({ children }) => {
   // delete product from cart
   const DeleteProductFromCart = (productID) => {
     setCart((prevCart) => prevCart.filter((item) => item.id !== productID));
+    showToast("Product removed from cart!", "error"); // 'error' type is red
   };
 
   // increment quantity

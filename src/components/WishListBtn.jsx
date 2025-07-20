@@ -1,12 +1,17 @@
 import { useWishList } from "../contexts/WishListContext";
+import { showToast } from "./ToastNotify";
 
 export default function WishListBtn({ product }) {
   const { wishList, addToWishList, removeFromWishList } = useWishList();
 
   if (wishList.find((el) => el.id === product.id)) {
+    const handleRemove = () => {
+      removeFromWishList(product.id);
+      showToast("Product removed from wishlist!", "info");
+    };
     return (
       <button
-        onClick={() => removeFromWishList(product.id)}
+        onClick={handleRemove}
         className=" hover:cursor-pointer z-[99]"
         title="remove from Wishlist"
       >
@@ -21,9 +26,13 @@ export default function WishListBtn({ product }) {
       </button>
     );
   } else {
+    const handleAdd = () => {
+      addToWishList(product);
+      showToast("Product added to wishlist!", "success");
+    };
     return (
       <button
-        onClick={() => addToWishList(product)}
+        onClick={handleAdd}
         className=" hover:cursor-pointer z-[99]"
         title="Add to Wishlist"
       >

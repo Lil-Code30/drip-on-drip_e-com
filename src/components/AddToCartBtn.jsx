@@ -1,4 +1,5 @@
 import { useCart } from "../contexts/CartContext";
+import { showToast } from "./ToastNotify";
 
 export default function AddToCartBtn({ product, quantity }) {
   const { addToCart } = useCart();
@@ -10,9 +11,13 @@ export default function AddToCartBtn({ product, quantity }) {
     price: product.price,
   };
 
+  const handleAddToCart = () => {
+    addToCart(productToCart);
+    showToast("Product added to cart!", "success");
+  };
   return (
     <button
-      onClick={() => addToCart(productToCart)}
+      onClick={handleAddToCart}
       className="flex flex-center text-white bg-black px-8 py-1.5  rounded hover:cursor-pointer hover:bg-white hover:border hover:text-black hover:font-semibold transition-all duration-300 ease-in"
     >
       <svg

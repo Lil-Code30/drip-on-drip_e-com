@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { showToast } from "../components/ToastNotify";
 
 const WishListContext = createContext();
 
@@ -19,6 +20,7 @@ export function WishListProvider({ children }) {
   // remove a product from wishList
   const removeFromWishList = (productId) => {
     setWishList((prev) => prev.filter((el) => el.id !== productId));
+    showToast("Product removed from wishlist!", "info");
   };
 
   return (
