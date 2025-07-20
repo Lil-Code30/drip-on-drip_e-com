@@ -8,6 +8,8 @@ import ProductDetails from "../pages/shop/ProductDetails";
 import Contact from "../pages/forms/Contact";
 import Login from "../pages/forms/Login";
 import SignUp from "../pages/forms/SignUp";
+import ForgotPassword from "../pages/forms/ForgotPassword";
+import ResetPassword from "../pages/forms/ResetPassword";
 import Cart from "../pages/Cart";
 import Checkout from "../pages/Checkout";
 import WishList from "../pages/WishList";
@@ -25,6 +27,8 @@ export default function AppRouter() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/wishlist" element={<WishList />} />
