@@ -13,6 +13,7 @@ export default function Shop() {
   const [priceRange, setPriceRange] = useState({ min: 0, max: 500 });
   const [rating, setRating] = useState(1);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [searchInput, setSearchInput] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 
   const categories = ["mens-shirts", "mens-shoes"];
@@ -25,9 +26,15 @@ export default function Shop() {
     },
   });
 
-  // handle search term
-  const handleSearchTerm = (value) => {
-    setSearchTerm(value);
+
+  // handle search input change
+  const handleSearchInput = (value) => {
+    setSearchInput(value);
+  };
+
+  // handle search submit (button or enter)
+  const handleSearch = () => {
+    setSearchTerm(searchInput);
   };
 
   const searchTermQuery = useQuery({
@@ -36,6 +43,7 @@ export default function Shop() {
       const data = await searchProduct(searchTerm);
       return data;
     },
+    enabled: !!searchTerm,
   });
 
   //handle category change
@@ -228,8 +236,9 @@ export default function Shop() {
           <div className="flex w-full flex-col gap-y-3 md:flex-row items-center">
             <div className="w-full mx-2 md:w-2/3">
               <SearchBar
-                searchTerm={searchTerm}
-                handleSearchTerm={handleSearchTerm}
+                searchTerm={searchInput}
+                handleSearchTerm={handleSearchInput}
+                onSearch={handleSearch}
               />
             </div>
             <div>
