@@ -1,4 +1,4 @@
-// fetch all active porducts in db
+// fetch all active products in db
 import axios from "axios";
 
 const api = axios.create({
@@ -66,5 +66,23 @@ export const searchProduct = async (term) => {
     return data;
   } catch (err) {
     console.log(`Error when searching for the product ${err.message}`);
+  }
+};
+
+// function to fetch 4 realted products
+export const getRelatedProducts = async (id, category) => {
+  try {
+    const res = await api.get(`/products/category/${category}`);
+    // return only 4 product and leave the product with the id passed in the query
+    const { data } = res;
+
+    // filter out the product with the id passed in the query
+    const filteredData = data
+      .filter((product) => product.id !== id)
+      .slice(0, 4);
+
+    return filteredData;
+  } catch (err) {
+    console.log(`Error when fetching related products ${err.message}`);
   }
 };

@@ -2,7 +2,7 @@ import { useParams, Link } from "react-router-dom";
 import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import { useQuery } from "@tanstack/react-query";
-import { getProductById } from "../../api";
+import { getProductById, getRelatedProducts } from "../../api";
 
 import ProductCard from "../../components/ProductCard";
 import Error from "../../components/Error";
@@ -16,22 +16,30 @@ import ProductReview from "../../components/ProductReview";
 
 export default function ProductDetails() {
   const { id } = useParams();
-
-  const { data, isFetching, isError } = useQuery({
-    queryKey: ["productsDetails"],
+  // query to fetch product details by id
+  const productDetailsQuery = useQuery({
+    queryKey: ["productsDetails", id],
     queryFn: async () => {
       const data = await getProductById(id);
       return data;
     },
   });
-  console.log(data);
+
+  // query to fetch related products
+  // it will fetch 4 products from the same category
+  const relatedProductsQuery = useQuery({
+    queryKey: ["relatedProducts", id, productDetailsQuery.data?.category?.name],
+    queryFn: async () => {
+      return getRelatedProducts(id, productDetailsQuery.data.category.name);
+    },
+    enabled: !!productDetailsQuery.data,
+  });
+
+  let currentProduct = productDetailsQuery.data;
   let displayActiveTabContent;
-  let currentProduct;
   let discountPercent;
   let originalPrice;
-  if (data) {
-    currentProduct = data;
-    // function to display the component that is active
+  if (currentProduct) {
     displayActiveTabContent = () => {
       switch (activeTab) {
         case "Description":
@@ -48,18 +56,6 @@ export default function ProductDetails() {
     discountPercent = currentProduct.discountPercentage.toFixed() + "% OFF";
     originalPrice =
       currentProduct.price / (1 - currentProduct.discountPercentage / 100);
-
-    //   const relatedProduct = allProducts
-    //   .filter(
-    //     (product) =>
-    //       product.category === currentProduct.category &&
-    //       product.id !== currentProduct.id
-    //   )
-    //   .slice(0, 4);
-
-    // const relatedProductEl = relatedProduct.map((product) => {
-    //   return <ProductCard key={product.id} product={product} />;
-    // });
   }
   const [clothSizes, setClothSizes] = useState([
     { id: 1, size: "XS", selected: false },
@@ -160,14 +156,14 @@ export default function ProductDetails() {
       <div>
         <p>
           <Link to="/">Home</Link> &gt; <Link to="../shop">Shop</Link> &gt;{" "}
-          <span>{data && currentProduct.name}</span>
+          <span>{productDetailsQuery.data && currentProduct.name}</span>
         </p>
       </div>
-      {isFetching ? (
+      {productDetailsQuery.isFetching ? (
         <div className=" size-full flex-center h-[50dvh]">
           <Loading />
         </div>
-      ) : isError ? (
+      ) : productDetailsQuery.isError ? (
         <div className=" size-full flex-center h-[50dvh]">
           <Error error="Error when fetching product's details from the db" />
         </div>
@@ -306,12 +302,19 @@ export default function ProductDetails() {
             </div>
             <div>{displayActiveTabContent()}</div>
           </section>
-          {/* <section>
+          <section>
             <h1 className="text-3xl font-semibold">Related Products</h1>
             <div className="grid grid-cols-4 gap-x-2 my-3">
-              {relatedProductEl}
+              {relatedProductsQuery.isFetching ? (
+                <Loading />
+              ) : (
+                relatedProductsQuery.data &&
+                relatedProductsQuery.data.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))
+              )}
             </div>
-          </section> */}
+          </section>
         </>
       )}
     </section>
