@@ -1,3 +1,12 @@
+import { useUser } from "../contexts/UserInfosContext";
+
 export default function Home() {
-  return <h1>This is Home Page</h1>;
+  const { userInfos } = useUser();
+
+  console.log(userInfos);
+  return (
+    <>
+      <h1>This is Home Page</h1>
+    </>
+  );
 }

@@ -1,10 +1,14 @@
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
+import { CircleUser, LogOut } from "lucide-react";
+
 import { NavLinks } from "../data";
 import { useWishList } from "../contexts/WishListContext";
 import { useCart } from "../contexts/CartContext";
+import { useUser } from "../contexts/UserInfosContext";
 
 export default function Header() {
+  const { userInfos } = useUser();
   const [menuChecked, setMenuChecked] = useState(false);
   const { wishList } = useWishList();
   const { cart } = useCart();
@@ -87,14 +91,27 @@ export default function Header() {
               </button>
             </div>
             {NavLinksEl}{" "}
+            <Link
+              onClick={handleMenuChecked}
+              to="profile"
+              className="nav-link md:hidded"
+            >
+              Profile
+            </Link>
           </div>
-          <Link
-            onClick={handleMenuChecked}
-            to="login"
-            className="nav-link  md:hidden mb-4  bg-blue-600 border-0 text-white "
-          >
-            Login
-          </Link>
+          {userInfos?.token ? (
+            <button className="nav-link border md:hidden mb-4 rounded bg-black flex justify-center gap-x-1.5 items-center text-white">
+              <span>Logout</span> <LogOut />{" "}
+            </button>
+          ) : (
+            <Link
+              onClick={handleMenuChecked}
+              to="login"
+              className="nav-link  md:hidden mb-4  bg-blue-600 border-0 text-white "
+            >
+              Login
+            </Link>
+          )}
         </nav>
       </div>
       <div className="flex items-center gap-x-2 justify-self-end-safe order-3">
@@ -134,12 +151,18 @@ export default function Header() {
           </svg>
           <span className="absolute text-[11px]">{wishList.length}</span>
         </Link>
-        <Link
-          to="login"
-          className="bg-black hidden md:block text-white font-semibold py-1 px-2 rounded hover:bg-white hover:border hover:text-black transition-all duration-300"
-        >
-          Login
-        </Link>
+        {userInfos?.token ? (
+          <Link to="/profile" className="hidden md:block">
+            <CircleUser size={30} />
+          </Link>
+        ) : (
+          <Link
+            to="login"
+            className="bg-black hidden md:block text-white font-semibold py-1 px-2 rounded hover:bg-white hover:border hover:text-black transition-all duration-300"
+          >
+            Login
+          </Link>
+        )}
       </div>
     </header>
   );
