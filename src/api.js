@@ -86,3 +86,17 @@ export const getRelatedProducts = async (id, category) => {
     console.log(`Error when fetching related products ${err.message}`);
   }
 };
+
+// function to create user account
+export const createUser = async (email, password) => {
+  const res = await api.post("/auth/register", { email, password });
+  const { data } = res;
+  return data;
+};
+
+// function to connect user to his/her account
+export const loginUser = async (email, password) => {
+  const res = await api.post("/auth/login", { email, password });
+  const { data } = res;
+  return data;
+};

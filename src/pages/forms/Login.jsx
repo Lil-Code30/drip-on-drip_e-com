@@ -1,10 +1,46 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { showToast } from "../../components/ToastNotify";
+import { loginUser } from "../../api";
 
 export default function Login() {
+  const [errorMsg, setErrorMsg] = useState("");
+  const navigate = useNavigate();
+
+  const loginUserQuery = useMutation({
+    mutationFn: async (formData) => {
+      const data = await loginUser(formData.email, formData.password);
+      return data;
+    },
+    onSuccess: (data) => {
+      localStorage.setItem("userInfos", JSON.stringify(data));
+
+      setErrorMsg("");
+      showToast("user login successfully", "success");
+      navigate("/");
+    },
+    onError: (error) => {
+      setErrorMsg(`Error: ${error.response.data.message}`);
+    },
+  });
+
+  //handle user login
+  const handleSubmit = (formData) => {
+    const email = formData.get("email");
+    const password = formData.get("password");
+
+    if (email && password) {
+      setErrorMsg("");
+      const data = { email, password };
+      loginUserQuery.mutate(data);
+    }
+  };
+
   return (
     <form
       class="max-w-sm mx-auto font-inter  mt-10  flex flex-col gap-y-3"
-      action="#"
+      action={handleSubmit}
     >
       <h5 class="text-2xl  text-center font-geist font-semibold text-gray-900">
         Sign in to our platform
@@ -47,7 +83,6 @@ export default function Login() {
             <input
               id="remember"
               type="checkbox"
-              value=""
               class="w-4 h-4 border border-gray-300 rounded-sm bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800"
             />
           </div>
@@ -62,9 +97,13 @@ export default function Login() {
           Lost Password?
         </Link>
       </div>
-      {/* display error message here
-      <span className="text-red-600 my-3 text-sm "></span>
-      */}
+
+      {errorMsg && (
+        <span className="text-red-600 my-3 text-sm text-center">
+          {errorMsg}
+        </span>
+      )}
+
       <button
         type="submit"
         class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"

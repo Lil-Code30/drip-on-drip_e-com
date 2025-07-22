@@ -1,8 +1,57 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { createUser } from "../../api";
+import { showToast } from "../../components/ToastNotify";
 
 export default function SignUp() {
+  const [errorMsg, setErrorMsg] = useState("");
+  const navigate = useNavigate();
+
+  const createUserQuery = useMutation({
+    mutationFn: async (formData) => {
+      const data = await createUser(formData.email, formData.password);
+      return data;
+    },
+    onSuccess: (data) => {
+      localStorage.setItem("userInfos", JSON.stringify(data));
+
+      setErrorMsg("");
+      showToast("Account created successfully", "success");
+      navigate("/");
+    },
+    onError: (error) => {
+      setErrorMsg(`Error: ${error.response.data.message}`);
+    },
+  });
+
+  // function to handle the creation of the user account
+  const handleSubmit = (formData) => {
+    const email = formData.get("email");
+    const password = formData.get("password");
+    const password2 = formData.get("repeatPassword");
+
+    if (!(password.length >= 8)) {
+      setErrorMsg("Your password must be more than 8 characters");
+      return;
+    }
+    if (password !== password2) {
+      setErrorMsg("The two passwords are not the same.");
+      return;
+    }
+
+    if (email && password && password2) {
+      setErrorMsg("");
+      const data = { email, password };
+      createUserQuery.mutate(data);
+    }
+  };
+
   return (
-    <form class="max-w-sm mx-auto font-inter mt-10  flex flex-col gap-y-3">
+    <form
+      action={handleSubmit}
+      class="max-w-sm mx-auto font-inter mt-10  flex flex-col gap-y-3"
+    >
       <h5 class="text-2xl  text-center font-geist font-semibold text-gray-900">
         Sign up to our platform
       </h5>
@@ -11,11 +60,12 @@ export default function SignUp() {
           for="email"
           class="block mb-2 text-md font-medium text-gray-900 "
         >
-          Your email
+          Email
         </label>
         <input
           type="email"
           id="email"
+          name="email"
           class="bg-gray-50 border border-black text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
           placeholder="name@flowbite.com"
           required
@@ -26,13 +76,15 @@ export default function SignUp() {
           for="password"
           class="block mb-2 text-md font-medium text-gray-900 "
         >
-          Your password
+          Password
         </label>
         <input
           type="password"
           id="password"
+          name="password"
           class="bg-gray-50 border border-black text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
           required
+          placeholder="8+ characters"
         />
       </div>
       <div class="mb-5">
@@ -40,11 +92,12 @@ export default function SignUp() {
           for="repeat-password"
           class="block mb-2 text-md font-medium text-gray-900 "
         >
-          Repeat password
+          Confirm password
         </label>
         <input
           type="password"
           id="repeat-password"
+          name="repeatPassword"
           class="bg-gray-50 border border-black text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
           required
         />
@@ -54,7 +107,6 @@ export default function SignUp() {
           <input
             id="terms"
             type="checkbox"
-            value=""
             class="w-4 h-4 border border-gray-300 rounded-sm bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800"
             required
           />
@@ -66,9 +118,11 @@ export default function SignUp() {
           </a>
         </label>
       </div>
-      {/* display error message here when creating account 
-      <span className="text-red-600 my-3 text-sm "></span>
-      */}
+      {errorMsg && (
+        <span className="text-red-600 my-3 text-sm text-center">
+          {errorMsg}
+        </span>
+      )}
       <button
         type="submit"
         className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
