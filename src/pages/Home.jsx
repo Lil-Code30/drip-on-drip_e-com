@@ -1,5 +1,5 @@
 import { useUser } from "../contexts/UserInfosContext";
-import VerifyEmailNotif from "../components/VerifyEmailNotif";
+import VerifyEmailNotif from "../components/auth/VerifyEmailNotif";
 
 export default function Home() {
   const { userInfos } = useUser();

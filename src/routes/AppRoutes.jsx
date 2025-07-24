@@ -3,17 +3,17 @@ import MainLayout from "../layouts/MainLayout";
 
 import Home from "../pages/Home";
 import About from "../pages/About";
-import Shop from "../pages/shop/Shop";
-import ProductDetails from "../pages/shop/ProductDetails";
-import Profile from "../pages/Profile";
-import Contact from "../pages/forms/Contact";
-import Login from "../pages/forms/Login";
-import SignUp from "../pages/forms/SignUp";
-import ForgotPassword from "../pages/forms/ForgotPassword";
-import ResetPassword from "../pages/forms/ResetPassword";
-import ConfirmEmail from "../pages/forms/ConfirmEmail";
-import Cart from "../pages/Cart";
-import Checkout from "../pages/Checkout";
+import Shop from "../pages/products/Shop";
+import ProductDetails from "../pages/products/ProductDetails";
+import Profile from "../pages/user/Profile";
+import Contact from "../pages/auth/Contact";
+import Login from "../pages/auth/Login";
+import SignUp from "../pages/auth/SignUp";
+import ForgotPassword from "../pages/auth/ForgotPassword";
+import ResetPassword from "../pages/auth/ResetPassword";
+import ConfirmEmail from "../pages/auth/ConfirmEmail";
+import Cart from "../pages/cart/Cart";
+import Checkout from "../pages/checkout/Checkout";
 import WishList from "../pages/WishList";
 import NotFound from "../pages/NotFound";
 

@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { useLocation, Link } from "react-router-dom";
-import { useCart } from "../contexts/CartContext";
+import { useCart } from "../../contexts/CartContext";
 import {
   CashOption,
   VenmoOption,
   PayPal,
   AmazonPay,
   DebitOrCreditCard,
-} from "../components/PaymentOption";
+} from "../../components/product/PaymentOption";
 
 export default function Checkout() {
   const [isShipAddress, setIsShipAddress] = useState(false);

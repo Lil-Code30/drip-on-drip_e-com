@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { useUser } from "../../contexts/UserInfosContext";
 import { showToast } from "../../components/common/ToastNotify";
-import CountDownTimer from "../../components/CountDownTimer";
+import CountDownTimer from "../../components/auth/CountDownTimer";
 
 const ConfirmEmail = () => {
   const navigate = useNavigate();
