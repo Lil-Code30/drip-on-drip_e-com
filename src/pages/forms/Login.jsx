@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { useUser } from "../../contexts/UserInfosContext";
-import { showToast } from "../../components/ToastNotify";
+import { showToast } from "../../components/common/ToastNotify";
 import { loginUser } from "../../api";
 
 export default function Login() {

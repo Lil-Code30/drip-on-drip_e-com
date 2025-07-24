@@ -1,8 +1,8 @@
 import { useState, useMemo } from "react";
-import ProductCard from "../../components/ProductCard";
-import Loading from "../../components/Loading";
-import Error from "../../components/Error";
-import SearchBar from "../../components/SearchBar";
+import ProductCard from "../../components/product/ProductCard";
+import Loading from "../../components/common/Loading";
+import Error from "../../components/common/Error";
+import SearchBar from "../../components/layout/SearchBar";
 import { Funnel, Star, AlignLeft } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getAllProducts, searchProduct } from "../../api";
@@ -25,7 +25,6 @@ export default function Shop() {
       return data;
     },
   });
-
 
   // handle search input change
   const handleSearchInput = (value) => {

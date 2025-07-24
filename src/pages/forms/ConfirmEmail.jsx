@@ -3,7 +3,7 @@ import { verifyAccount, requestVerificationCode } from "../../api";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { useUser } from "../../contexts/UserInfosContext";
-import { showToast } from "../../components/ToastNotify";
+import { showToast } from "../../components/common/ToastNotify";
 import CountDownTimer from "../../components/CountDownTimer";
 
 const ConfirmEmail = () => {

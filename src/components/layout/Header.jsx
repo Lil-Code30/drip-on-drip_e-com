@@ -2,10 +2,10 @@ import { useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { CircleUser, LogOut } from "lucide-react";
 
-import { NavLinks } from "../data";
-import { useWishList } from "../contexts/WishListContext";
-import { useCart } from "../contexts/CartContext";
-import { useUser } from "../contexts/UserInfosContext";
+import { NavLinks } from "../../data";
+import { useWishList } from "../../contexts/WishListContext";
+import { useCart } from "../../contexts/CartContext";
+import { useUser } from "../../contexts/UserInfosContext";
 
 export default function Header() {
   const { userInfos, handleUser } = useUser();

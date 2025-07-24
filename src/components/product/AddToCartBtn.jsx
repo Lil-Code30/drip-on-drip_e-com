@@ -1,5 +1,5 @@
-import { useCart } from "../contexts/CartContext";
-import { showToast } from "./ToastNotify";
+import { useCart } from "../../contexts/CartContext";
+import { showToast } from "../common/ToastNotify";
 
 export default function AddToCartBtn({ product, quantity }) {
   const { addToCart } = useCart();

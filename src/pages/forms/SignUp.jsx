@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { createUser } from "../../api";
 import { useUser } from "../../contexts/UserInfosContext";
-import { showToast } from "../../components/ToastNotify";
+import { showToast } from "../../components/common/ToastNotify";
 
 export default function SignUp() {
   const [errorMsg, setErrorMsg] = useState("");

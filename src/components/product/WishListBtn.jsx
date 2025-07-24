@@ -1,5 +1,5 @@
-import { useWishList } from "../contexts/WishListContext";
-import { showToast } from "./ToastNotify";
+import { useWishList } from "../../contexts/WishListContext";
+import { showToast } from "../common/ToastNotify";
 
 export default function WishListBtn({ product }) {
   const { wishList, addToWishList, removeFromWishList } = useWishList();

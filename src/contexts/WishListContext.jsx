@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { showToast } from "../components/ToastNotify";
+import { showToast } from "../components/common/ToastNotify";
 
 const WishListContext = createContext();
 

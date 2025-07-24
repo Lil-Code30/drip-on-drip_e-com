@@ -1,18 +1,17 @@
 import { useParams, Link } from "react-router-dom";
 import { useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
 import { useQuery } from "@tanstack/react-query";
 import { getProductById, getRelatedProducts } from "../../api";
 
-import ProductCard from "../../components/ProductCard";
-import Error from "../../components/Error";
-import Loading from "../../components/Loading";
-import AddToCartBtn from "../../components/AddToCartBtn";
-import WishListBtn from "../../components/WishListBtn";
-import QuantityBox from "../../components/QuantityBox";
-import ProductDescription from "../../components/ProductDescription";
-import ProductAdditionalInfos from "../../components/ProductAdditionalInfos";
-import ProductReview from "../../components/ProductReview";
+import ProductCard from "../../components/product/ProductCard";
+import Error from "../../components/common/Error";
+import Loading from "../../components/common/Loading";
+import AddToCartBtn from "../../components/product/AddToCartBtn";
+import WishListBtn from "../../components/product/WishListBtn";
+import QuantityBox from "../../components/product/QuantityBox";
+import ProductDescription from "../../components/product/ProductDescription";
+import ProductAdditionalInfos from "../../components/product/ProductAdditionalInfos";
+import ProductReview from "../../components/product/ProductReview";
 
 export default function ProductDetails() {
   const { id } = useParams();
