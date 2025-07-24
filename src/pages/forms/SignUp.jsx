@@ -2,11 +2,13 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { createUser } from "../../api";
+import { useUser } from "../../contexts/UserInfosContext";
 import { showToast } from "../../components/ToastNotify";
 
 export default function SignUp() {
   const [errorMsg, setErrorMsg] = useState("");
   const navigate = useNavigate();
+  const { handleUser } = useUser();
 
   const createUserQuery = useMutation({
     mutationFn: async (formData) => {
@@ -15,6 +17,7 @@ export default function SignUp() {
     },
     onSuccess: (data) => {
       localStorage.setItem("userInfos", JSON.stringify(data));
+      handleUser(data);
 
       setErrorMsg("");
       showToast("Account created successfully", "success");

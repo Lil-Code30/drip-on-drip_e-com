@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { CircleUser, LogOut } from "lucide-react";
 
 import { NavLinks } from "../data";
@@ -8,13 +8,23 @@ import { useCart } from "../contexts/CartContext";
 import { useUser } from "../contexts/UserInfosContext";
 
 export default function Header() {
-  const { userInfos } = useUser();
+  const { userInfos, handleUser } = useUser();
   const [menuChecked, setMenuChecked] = useState(false);
+
   const { wishList } = useWishList();
   const { cart } = useCart();
+  const navigate = useNavigate();
 
   const handleMenuChecked = () => {
     setMenuChecked((prev) => !prev);
+  };
+
+  // handle logout
+  const handleLogout = () => {
+    localStorage.removeItem("userInfos");
+    handleUser({});
+    handleMenuChecked();
+    navigate("/");
   };
 
   const NavLinksEl = NavLinks.map((link) => {
@@ -94,13 +104,16 @@ export default function Header() {
             <Link
               onClick={handleMenuChecked}
               to="profile"
-              className="nav-link md:hidded"
+              className="nav-link md:hidden"
             >
               Profile
             </Link>
           </div>
           {userInfos?.token ? (
-            <button className="nav-link border md:hidden mb-4 rounded bg-black flex justify-center gap-x-1.5 items-center text-white">
+            <button
+              onClick={handleLogout}
+              className="nav-link border md:hidden mb-4 rounded bg-black flex justify-center gap-x-1.5 items-center text-white"
+            >
               <span>Logout</span> <LogOut />{" "}
             </button>
           ) : (

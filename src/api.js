@@ -100,3 +100,32 @@ export const loginUser = async (email, password) => {
   const { data } = res;
   return data;
 };
+
+// function to ask for a new email verification code
+export const requestVerificationCode = async (token) => {
+  const res = await api.get("/auth/request-email-verification-code", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  const { data } = res;
+  return data;
+};
+
+// function to verify user account
+export const verifyAccount = async (token, codes) => {
+  const res = await api.post(
+    "/auth/verify-email",
+    {
+      code: codes,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const { data } = res;
+  return data;
+};
