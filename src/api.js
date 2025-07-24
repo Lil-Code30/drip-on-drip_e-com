@@ -114,6 +114,7 @@ export const requestVerificationCode = async (token) => {
 
 // function to verify user account
 export const verifyAccount = async (token, codes) => {
+  console.log("Frontend - codes parameter:", codes);
   const res = await api.post(
     "/auth/verify-email",
     {

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { verifyAccount, requestVerificationCode } from "../../api";
 import { useNavigate } from "react-router-dom";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useUser } from "../../contexts/UserInfosContext";
 import { showToast } from "../../components/ToastNotify";
 import CountDownTimer from "../../components/CountDownTimer";
@@ -9,8 +9,7 @@ import CountDownTimer from "../../components/CountDownTimer";
 const ConfirmEmail = () => {
   const navigate = useNavigate();
   const [errorMsg, setErrorMsg] = useState("");
-  const [time, setTime] = useState(0);
-  const [sendCode, setSendCode] = useState(false);
+  const [time, setTime] = useState(120);
 
   const { userInfos, handleUser } = useUser();
 
@@ -18,7 +17,7 @@ const ConfirmEmail = () => {
 
   const verifyAccountQuery = useMutation({
     mutationFn: async (formData) => {
-      const data = await verifyAccount(token, formData.code);
+      const data = await verifyAccount(token, formData.codes);
       return data;
     },
     onSuccess: (data) => {
@@ -34,30 +33,46 @@ const ConfirmEmail = () => {
     },
   });
 
-  const sendVerificationCode = useQuery({
-    queryKey: ["verificationCode"],
-    queryFn: async () => {
+  const sendVerificationCode = useMutation({
+    mutationFn: async () => {
       const data = await requestVerificationCode(token);
       return data;
     },
-    enabled: !!sendCode,
+    onSuccess: () => {
+      setErrorMsg("");
+      showToast("Verification code sent to your email", "success");
+      // setTime(60); // reset countdown timer to 60 seconds
+    },
+    onError: (error) => {
+      console.log("Full error:", error);
+
+      let errorMessage = "Unknown error occurred";
+
+      if (error.response) {
+        // Server responded with error status
+        errorMessage =
+          error.response.data?.message ||
+          `Server error: ${error.response.status}`;
+      } else if (error.request) {
+        // Network error (like 504 timeout)
+        errorMessage =
+          "Network error - please check your connection or try again later";
+      } else {
+        // Other error
+        errorMessage = error.message || "Something went wrong";
+      }
+
+      setErrorMsg(errorMessage);
+      showToast(errorMessage, "error");
+      console.error("Request failed:", errorMessage);
+    },
   });
 
-  // if (sendVerificationCode.isEnabled) {
-  //   setErrorMsg("");
-  //   showToast("Verification code sent");
-  // }
+  // handle request for a new verification code
   const handleRequestCode = () => {
-    try {
-      setSendCode(true);
-      setTime(120);
-    } catch (err) {
-      console.log(err.message);
-    } finally {
-      setSendCode(false);
-    }
+    setErrorMsg("");
+    sendVerificationCode.mutate();
   };
-
   // handle code submission
   const handleSubmit = (formData) => {
     const code1 = formData.get("verification-code1");
