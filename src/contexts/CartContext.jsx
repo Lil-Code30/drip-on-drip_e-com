@@ -1,11 +1,23 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { showToast } from "../components/common/ToastNotify";
+import { useUser } from "./UserInfosContext";
+import { useQuery } from "@tanstack/react-query";
+import { getUserCart } from "../api";
 
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-  const cartDB = JSON.parse(localStorage.getItem("myCart")) || [];
-  const [cart, setCart] = useState(cartDB);
+  const { userInfos } = useUser();
+  const cartQuery = useQuery({
+    queryKey: ["cart"],
+    queryFn: async () => {
+      const data = await getUserCart(userInfos.user.userId);
+      return data;
+    },
+  });
+
+  console.log(cartQuery.data);
+  const [cart, setCart] = useState(cartQuery.data);
 
   // adding a product to the cart
   const addToCart = (product) => {
@@ -49,8 +61,8 @@ export const CartProvider = ({ children }) => {
       )
     );
   useEffect(() => {
-    localStorage.setItem("myCart", JSON.stringify(cart));
-  }, [cart]);
+    setCart(cartQuery.data);
+  }, [cartQuery.data, userInfos]);
 
   return (
     <CartContext.Provider
@@ -68,19 +80,3 @@ export const CartProvider = ({ children }) => {
 };
 
 export const useCart = () => useContext(CartContext);
-
-/*
-cart format 
-myCart = [
-{
-id: 2,
-name:
-productImage:
-quantity:
-price:
-
-}
-
-]
-
-*/

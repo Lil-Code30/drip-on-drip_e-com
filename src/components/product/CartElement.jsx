@@ -12,10 +12,10 @@ export default function CartElement({ item }) {
         <div className="flex item-center">
           <img
             className="size-10 md:size-20"
-            src={item.productImage}
-            alt={item.name}
+            src={item.product.images[0]}
+            alt={item.product.name}
           />
-          <p className="self-center">{item.name}</p>
+          <p className="self-center">{item.product.name}</p>
         </div>
       </td>
       <td className="px-0.5">{item.price} $CAD</td>

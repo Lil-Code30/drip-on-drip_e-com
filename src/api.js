@@ -130,3 +130,12 @@ export const verifyAccount = async (token, codes) => {
   const { data } = res;
   return data;
 };
+
+// function to get user cart
+export const getUserCart = async (userId) => {
+  const res = await api.get(`/cart?userId=${userId}`);
+
+  const { data } = res;
+
+  return data;
+};
