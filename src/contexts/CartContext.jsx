@@ -1,8 +1,8 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { showToast } from "../components/common/ToastNotify";
 import { useUser } from "./UserInfosContext";
-import { useQuery } from "@tanstack/react-query";
-import { getUserCart } from "../api";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { getUserCart, addProductToCart } from "../api";
 
 const CartContext = createContext();
 
@@ -16,23 +16,30 @@ export const CartProvider = ({ children }) => {
     },
   });
 
-  console.log(cartQuery.data);
+  const addProductToCartQuery = useMutation({
+    mutationFn: async (productData) => {
+      const data = await addProductToCart(productData);
+      return data;
+    },
+    onSuccess: (data) => {
+      showToast(data.message, "success");
+    },
+    onError: (error) => {
+      showToast(`Error: ${error.response.data.message}`, "error");
+    },
+  });
+
   const [cart, setCart] = useState(cartQuery.data);
 
   // adding a product to the cart
   const addToCart = (product) => {
-    const productInCart = cart.find((item) => item.id === product.id);
-    if (productInCart) {
-      setCart((prevCart) =>
-        prevCart.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + product.quantity }
-            : { ...item }
-        )
-      );
-    } else {
-      setCart((prevCart) => [...prevCart, product]);
-    }
+    const productData = {
+      userId: userInfos.user.userId,
+      price: product.price,
+      productId: product.id,
+      quantity: product.quantity,
+    };
+    addProductToCartQuery.mutate(productData);
   };
 
   // delete product from cart

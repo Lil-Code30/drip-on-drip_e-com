@@ -1,19 +1,21 @@
 import { useCart } from "../../contexts/CartContext";
-import { showToast } from "../common/ToastNotify";
+import { useUser } from "../../contexts/UserInfosContext";
 
 export default function AddToCartBtn({ product, quantity }) {
   const { addToCart } = useCart();
+  const { userInfos } = useUser();
   const productToCart = {
     id: product.id,
-    name: product.title,
-    productImage: product.images[0],
     quantity: quantity,
     price: product.price,
   };
 
   const handleAddToCart = () => {
+    if (Object.keys(userInfos).length === 0) {
+      alert("You must be connected in order to add product to your cart");
+      return;
+    }
     addToCart(productToCart);
-    showToast("Product added to cart!", "success");
   };
   return (
     <button

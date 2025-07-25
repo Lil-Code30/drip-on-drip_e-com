@@ -139,3 +139,17 @@ export const getUserCart = async (userId) => {
 
   return data;
 };
+
+//function to add product to cart
+export const addProductToCart = async (productData) => {
+  const res = await api.post(`/cart`, {
+    userId: productData.userId,
+    price: productData.price,
+    productId: productData.productId,
+    quantity: productData.quantity,
+  });
+
+  const { data } = res;
+
+  return data;
+};
