@@ -1,4 +1,4 @@
-import { useCart } from "../contexts/CartContext";
+import { useCart } from "../../contexts/CartContext";
 
 export default function CartElement({ item }) {
   const { DeleteProductFromCart, incrementQuantity, decrementQuantity } =

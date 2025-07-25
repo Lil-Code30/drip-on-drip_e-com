@@ -1,5 +1,5 @@
-import { useWishList } from "../contexts/WishListContext";
-import { useCart } from "../contexts/CartContext";
+import { useWishList } from "../../contexts/WishListContext";
+import { useCart } from "../../contexts/CartContext";
 
 export default function WishList() {
   const { wishList, removeFromWishList } = useWishList();

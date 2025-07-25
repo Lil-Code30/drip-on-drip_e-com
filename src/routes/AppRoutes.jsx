@@ -14,7 +14,7 @@ import ResetPassword from "../pages/auth/ResetPassword";
 import ConfirmEmail from "../pages/auth/ConfirmEmail";
 import Cart from "../pages/cart/Cart";
 import Checkout from "../pages/checkout/Checkout";
-import WishList from "../pages/WishList";
+import WishList from "../pages/products/WishList";
 import NotFound from "../pages/NotFound";
 
 export default function AppRouter() {
