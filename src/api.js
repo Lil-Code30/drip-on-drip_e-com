@@ -154,10 +154,20 @@ export const addProductToCart = async (productData) => {
   return data;
 };
 
+// function to delete product from the cart
 export const deleteProductFromCart = async (userId, productId) => {
   const res = await api.delete(
     `/cart/user-cart?userId=${userId}&productId=${productId}`
   );
+
+  const { data } = res;
+
+  return data;
+};
+
+// function to clear cart
+export const clearCart = async (userId) => {
+  const res = await api.delete(`/cart/${userId}`);
 
   const { data } = res;
 

@@ -2,7 +2,12 @@ import { createContext, useContext, useState, useEffect } from "react";
 import { showToast } from "../components/common/ToastNotify";
 import { useUser } from "./UserInfosContext";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { getUserCart, addProductToCart, deleteProductFromCart } from "../api";
+import {
+  getUserCart,
+  addProductToCart,
+  deleteProductFromCart,
+  clearCart,
+} from "../api";
 
 const CartContext = createContext();
 
@@ -23,6 +28,8 @@ export const CartProvider = ({ children }) => {
     },
     onSuccess: (data) => {
       showToast(data.message, "success");
+      // refetch cart when any action has been done in the cart
+      cartQuery.refetch();
     },
     onError: (error) => {
       showToast(`Error: ${error.response.data.message}`, "error");
@@ -39,12 +46,26 @@ export const CartProvider = ({ children }) => {
     },
     onSuccess: (data) => {
       showToast(data.message, "success");
+      cartQuery.refetch();
     },
     onError: (error) => {
       showToast(`Error: ${error.response.data.message}`, "error");
     },
   });
 
+  const clearUserCart = useMutation({
+    mutationFn: async () => {
+      const data = await clearCart(userInfos.user.userId);
+      return data;
+    },
+    onSuccess: (data) => {
+      showToast(data.message, "success");
+      cartQuery.refetch();
+    },
+    onError: (error) => {
+      showToast(`Error: ${error.response.data.message}`, "error");
+    },
+  });
   const [cart, setCart] = useState(cartQuery.data);
 
   // adding a product to the cart
@@ -62,6 +83,11 @@ export const CartProvider = ({ children }) => {
   const DeleteProductFromCart = (productId) => {
     const data = { productId };
     deleteProductQuery.mutate(data);
+  };
+
+  // clear user cart
+  const clearUserCartFn = () => {
+    clearUserCart.mutate();
   };
 
   // increment quantity
@@ -85,7 +111,14 @@ export const CartProvider = ({ children }) => {
     );
   useEffect(() => {
     setCart(cartQuery.data);
-  }, [cartQuery.data, userInfos]);
+  }, [cartQuery.data]);
+
+  // Clear cart on logout
+  useEffect(() => {
+    if (!userInfos.user || !userInfos.user.userId) {
+      setCart([]);
+    }
+  }, [userInfos]);
 
   return (
     <CartContext.Provider
@@ -95,6 +128,7 @@ export const CartProvider = ({ children }) => {
         DeleteProductFromCart,
         incrementQuantity,
         decrementQuantity,
+        clearUserCartFn,
       }}
     >
       {children}

@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import CartElement from "../../components/product/CartElement";
 
 export default function Cart() {
-  const { cart } = useCart();
+  const { cart, clearUserCartFn } = useCart();
   // if not cart mean user not connected
   if (!cart) {
     return (
@@ -56,9 +56,17 @@ export default function Cart() {
       {cart.length > 0 ? (
         <section className="flex flex-col md:flex-row gap-y-2 md:gap-x-2">
           <div className="border-1 md:w-2/3 h-fit border-gray-400 py-2">
-            <h1 className="text-xl md:text-2xl pl-3 py-2 font-semibold">
-              Shopping Cart
-            </h1>
+            <div className="flex  justify-between px-2 items-center">
+              <h1 className="text-xl md:text-2xl pl-3 py-2 font-semibold">
+                Shopping Cart
+              </h1>
+              <button
+                className="border rounded bg-orange-600/70 px-2 text-white"
+                onClick={clearUserCartFn}
+              >
+                Clear Cart
+              </button>
+            </div>
             <table className="w-full mb-1.5">
               <thead>
                 <tr className="bg-gray-300 text-black text-center uppercase text-sm">
