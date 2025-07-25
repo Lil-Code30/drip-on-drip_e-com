@@ -7,7 +7,7 @@ export default function CartElement({ item }) {
   let subTotal = item.quantity * item.price;
 
   return (
-    <tr key={item.id} className="text-sm">
+    <tr key={item.product.productId} className="text-sm">
       <td>
         <div className="flex item-center">
           <img
@@ -21,7 +21,7 @@ export default function CartElement({ item }) {
       <td className="px-0.5">{item.price} $CAD</td>
       <td className="px-0.5">
         <div className="border rounded-lg flex item-center justify-between px-1 w-20 h-8">
-          <button onClick={() => decrementQuantity(item.id)}>
+          <button onClick={() => decrementQuantity(item.productId)}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -34,7 +34,7 @@ export default function CartElement({ item }) {
             </svg>
           </button>
           <span className="align-middle flex-center ">{item.quantity}</span>
-          <button onClick={() => incrementQuantity(item.id)}>
+          <button onClick={() => incrementQuantity(item.productId)}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -57,7 +57,7 @@ export default function CartElement({ item }) {
         <button
           className="hover:cursor-pointer"
           title="Delete product from cart"
-          onClick={() => DeleteProductFromCart(item.id)}
+          onClick={() => DeleteProductFromCart(item.productId)}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

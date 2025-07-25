@@ -153,3 +153,13 @@ export const addProductToCart = async (productData) => {
 
   return data;
 };
+
+export const deleteProductFromCart = async (userId, productId) => {
+  const res = await api.delete(
+    `/cart/user-cart?userId=${userId}&productId=${productId}`
+  );
+
+  const { data } = res;
+
+  return data;
+};

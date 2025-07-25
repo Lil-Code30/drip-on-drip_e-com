@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 import { showToast } from "../components/common/ToastNotify";
 import { useUser } from "./UserInfosContext";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { getUserCart, addProductToCart } from "../api";
+import { getUserCart, addProductToCart, deleteProductFromCart } from "../api";
 
 const CartContext = createContext();
 
@@ -29,6 +29,22 @@ export const CartProvider = ({ children }) => {
     },
   });
 
+  const deleteProductQuery = useMutation({
+    mutationFn: async (productData) => {
+      const data = await deleteProductFromCart(
+        userInfos.user.userId,
+        productData.productId
+      );
+      return data;
+    },
+    onSuccess: (data) => {
+      showToast(data.message, "success");
+    },
+    onError: (error) => {
+      showToast(`Error: ${error.response.data.message}`, "error");
+    },
+  });
+
   const [cart, setCart] = useState(cartQuery.data);
 
   // adding a product to the cart
@@ -43,9 +59,9 @@ export const CartProvider = ({ children }) => {
   };
 
   // delete product from cart
-  const DeleteProductFromCart = (productID) => {
-    setCart((prevCart) => prevCart.filter((item) => item.id !== productID));
-    showToast("Product removed from cart!", "error"); // 'error' type is red
+  const DeleteProductFromCart = (productId) => {
+    const data = { productId };
+    deleteProductQuery.mutate(data);
   };
 
   // increment quantity
