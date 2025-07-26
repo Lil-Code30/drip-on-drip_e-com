@@ -176,7 +176,7 @@ export const clearCart = async (userId) => {
 
 //function to update quantity
 export const updateCartQuantities = async (userId, cartItems) => {
-  const res = api.put(`/cart/`, {
+  const res = await api.put(`/cart/`, {
     userId,
     cartItems,
   });

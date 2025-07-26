@@ -55,18 +55,18 @@ export default function Checkout() {
     }
   };
 
-  const orderSummaryEl = cart.map((item) => {
+  const orderSummaryEl = cart?.map((item) => {
     return (
       <div key={item.id} className="flex items-center">
         <div>
           <img
             className="size-[50px]"
-            src={item.productImage}
-            alt={item.name}
+            src={item.product.images[0]}
+            alt={item.product.name}
           />
         </div>
         <div>
-          <h4 className="text-sm">{item.name}</h4>
+          <h4 className="text-sm">{item.product.name}</h4>
           <p className="text-[11px]">
             {item.quantity} x{" "}
             <span className="text-blue-500">{item.price} $CAD</span>

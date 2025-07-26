@@ -142,8 +142,6 @@ export const CartProvider = ({ children }) => {
       productId: item.productId,
       quantity: item.quantity,
     }));
-
-    showToast("Cart updated!", "success");
     updateCartQuantitiesMutation.mutate(cartItems);
   };
   useEffect(() => {
