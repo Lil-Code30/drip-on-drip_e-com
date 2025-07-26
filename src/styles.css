@@ -25,6 +25,9 @@
   .nav-link {
     @apply text-xl md:text-lg text-center hover:font-semibold transition-all duration-300 my-1.5 mx-2 py-1 md:py-0 border md:border-0 rounded;
   }
+  .profile-title {
+    @apply text-gray-400 py-1 pl-0.5 font-semibold text-[15px] border rounded;
+  }
 }
 
 @layer utilities {
