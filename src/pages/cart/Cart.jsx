@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import CartElement from "../../components/product/CartElement";
 
 export default function Cart() {
-  const { cart, clearUserCartFn } = useCart();
+  const { cart, clearUserCartFn, updateCartQuantities, localCart } = useCart();
   // if not cart mean user not connected
   if (!cart) {
     return (
@@ -30,13 +30,13 @@ export default function Cart() {
     );
   }
 
-  const cartElements = cart.map((item) => {
+  const cartElements = localCart.map((item) => {
     return <CartElement key={item.id} item={item} />;
   });
 
   let subTotal = 0;
 
-  cart.map((el) => {
+  localCart.map((el) => {
     el.price * el.quantity;
     subTotal = subTotal + el.price * el.quantity;
   });
@@ -53,7 +53,7 @@ export default function Cart() {
 
   return (
     <>
-      {cart.length > 0 ? (
+      {localCart.length > 0 ? (
         <section className="flex flex-col md:flex-row gap-y-2 md:gap-x-2">
           <div className="border-1 md:w-2/3 h-fit border-gray-400 py-2">
             <div className="flex  justify-between px-2 items-center">
@@ -101,7 +101,10 @@ export default function Cart() {
                 </svg>
                 <span>Return to Shop</span>
               </Link>
-              <button className="bg-blue-600 px-2 rounded text-white py-1 hover:cursor-pointer hover:bg-blue-400">
+              <button
+                onClick={updateCartQuantities}
+                className="bg-blue-600 px-2 rounded text-white py-1 hover:cursor-pointer hover:bg-blue-400"
+              >
                 Update Cart
               </button>
             </div>

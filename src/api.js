@@ -173,3 +173,15 @@ export const clearCart = async (userId) => {
 
   return data;
 };
+
+//function to update quantity
+export const updateCartQuantities = async (userId, cartItems) => {
+  const res = api.put(`/cart/`, {
+    userId,
+    cartItems,
+  });
+
+  const { data } = res;
+
+  return data;
+};
