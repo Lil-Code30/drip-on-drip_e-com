@@ -1,10 +1,11 @@
 import { LogOut, SquareUserRound, Truck, Wallet } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useOutletContext } from "react-router-dom";
 import { useUser } from "../../contexts/UserInfosContext";
 
 const ProfileSummary = () => {
   const navigate = useNavigate();
   const { handleUser } = useUser();
+  const { userInfos } = useOutletContext();
   const handleLogout = () => {
     localStorage.removeItem("userInfos");
     handleUser({});
