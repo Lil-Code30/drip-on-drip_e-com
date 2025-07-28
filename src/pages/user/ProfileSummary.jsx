@@ -5,7 +5,7 @@ import { useUser } from "../../contexts/UserInfosContext";
 const ProfileSummary = () => {
   const navigate = useNavigate();
   const { handleUser } = useUser();
-  const { userInfos } = useOutletContext();
+  const { userProfile } = useOutletContext();
   const handleLogout = () => {
     localStorage.removeItem("userInfos");
     handleUser({});
@@ -16,7 +16,10 @@ const ProfileSummary = () => {
       <div className="flex  items-center justify-between">
         <div>
           <h1 className="text-2xl">
-            Hello <span className="font-bold">Ismael</span>
+            Hello{" "}
+            <span className="font-bold">
+              {userProfile?.data?.firstName} {userProfile?.data?.lastName}
+            </span>
           </h1>
           <p>Welcome back :)</p>
         </div>
@@ -44,9 +47,11 @@ const ProfileSummary = () => {
             <div className="flex items-center justify-around py-2">
               <SquareUserRound size="50" />
               <div className="text-sm">
-                <p>John Doe</p>
-                <p>19/01/1800</p>
-                <p>john.doe@gmail.com</p>
+                <p>
+                  {userProfile?.data?.firstName} {userProfile?.data?.lastName}
+                </p>
+                <p>{userProfile?.data?.dateOfBirth}</p>
+                <p>{userProfile?.user?.userEmail}</p>
               </div>
             </div>
           </div>

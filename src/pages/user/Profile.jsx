@@ -1,12 +1,22 @@
 import { Link, Outlet } from "react-router-dom";
 import { useUser } from "../../contexts/UserInfosContext";
+import { useQuery } from "@tanstack/react-query";
 import Loading from "../../components/common/Loading";
 import Error from "../../components/common/Error";
+import { getUserProfile } from "../../api";
 
 const Profile = () => {
   const { userInfos } = useUser();
   let loading = false;
   let error = false;
+
+  const ProfileQuery = useQuery({
+    queryKey: ["profile"],
+    queryFn: async () => {
+      const data = await getUserProfile(userInfos.token);
+      return data;
+    },
+  });
 
   if (!userInfos?.token) {
     return (
@@ -31,6 +41,10 @@ const Profile = () => {
       </div>
     );
   }
+
+  console.log(ProfileQuery?.data);
+
+  const userProfile = ProfileQuery?.data;
 
   return (
     <>
@@ -84,7 +98,7 @@ const Profile = () => {
           ) : error ? (
             <Error error="Error when fetching user profile" />
           ) : (
-            <Outlet context={{ userInfos }} />
+            <Outlet context={{ userInfos, userProfile }} />
           )}
         </div>
       </section>

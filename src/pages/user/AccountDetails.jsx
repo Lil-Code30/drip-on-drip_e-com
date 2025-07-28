@@ -1,6 +1,8 @@
-import { Link } from "react-router-dom";
+import { Link, useOutletContext } from "react-router-dom";
 
 const AccountDetails = () => {
+  const { userProfile } = useOutletContext();
+
   return (
     <>
       <section className="w-full">
@@ -27,6 +29,7 @@ const AccountDetails = () => {
                   type="text"
                   id="first-name"
                   name="firstName"
+                  defaultValue={userProfile?.data?.firstName}
                   class="bg-white border border-gray-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
                 />
               </div>
@@ -41,6 +44,7 @@ const AccountDetails = () => {
                   type="text"
                   id="last-name"
                   name="lastName"
+                  defaultValue={userProfile?.data?.lastName}
                   class="bg-white border border-gray-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
                 />
               </div>
@@ -54,6 +58,7 @@ const AccountDetails = () => {
                 <input
                   type="date"
                   id="dob"
+                  defaultValue={userProfile?.data?.dateOfBirth}
                   class="bg-white border border-gray-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
                 />
               </div>
@@ -63,10 +68,26 @@ const AccountDetails = () => {
                 </label>
                 <div className="flex items-cente gap-x-8">
                   <label>
-                    Male <input type="radio" name="gender" value="male" />
+                    Male{" "}
+                    <input
+                      type="radio"
+                      name="gender"
+                      value="male"
+                      checked={
+                        userProfile?.data?.gender?.toLowerCase() === "male"
+                      }
+                    />
                   </label>
                   <label>
-                    Female <input type="radio" name="gender" value="female" />
+                    Female{" "}
+                    <input
+                      type="radio"
+                      name="gender"
+                      value="female"
+                      checked={
+                        userProfile?.data?.gender?.toLowerCase() === "female"
+                      }
+                    />
                   </label>
                 </div>
               </div>

@@ -185,3 +185,15 @@ export const updateCartQuantities = async (userId, cartItems) => {
 
   return data;
 };
+
+// function to get user profile
+export const getUserProfile = async (token) => {
+  const res = await api.get(`/user/profile/`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  const { data } = res;
+
+  return data;
+};
