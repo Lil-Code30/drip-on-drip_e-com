@@ -53,7 +53,6 @@ const Profile = () => {
       handleUser({});
     }
   }
-  console.log(ProfileQuery?.data);
 
   const userProfile = ProfileQuery?.data;
 

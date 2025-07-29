@@ -197,3 +197,24 @@ export const getUserProfile = async (token) => {
 
   return data;
 };
+
+// function to update user profile
+export const updateUserProfile = async (token, userData) => {
+  const res = await api.put(
+    `/user/profile/`,
+    {
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      gender: userData.gender,
+      dateOfBirth: userData.dateOfBirth,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  const { data } = res;
+
+  return data;
+};

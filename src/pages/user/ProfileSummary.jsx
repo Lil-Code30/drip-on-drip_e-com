@@ -50,7 +50,7 @@ const ProfileSummary = () => {
                 <p>
                   {userProfile?.data?.firstName} {userProfile?.data?.lastName}
                 </p>
-                <p>{userProfile?.data?.dateOfBirth}</p>
+                <p>{userProfile?.data?.dateOfBirth?.split("T")[0]}</p>
                 <p>{userProfile?.user?.userEmail}</p>
               </div>
             </div>
