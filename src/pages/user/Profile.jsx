@@ -4,9 +4,10 @@ import { useQuery } from "@tanstack/react-query";
 import Loading from "../../components/common/Loading";
 import Error from "../../components/common/Error";
 import { getUserProfile } from "../../api";
+import { showToast } from "../../components/common/ToastNotify";
 
 const Profile = () => {
-  const { userInfos } = useUser();
+  const { userInfos, handleUser } = useUser();
   let loading = false;
   let error = false;
 
@@ -42,6 +43,16 @@ const Profile = () => {
     );
   }
 
+  if (ProfileQuery?.isError) {
+    if (
+      ProfileQuery.error.response.data.message === "Token Expired" ||
+      ProfileQuery.error.response.data.message === "Wrong Token"
+    ) {
+      showToast(ProfileQuery.error.response.data.message, "error");
+      localStorage.removeItem("userInfos");
+      handleUser({});
+    }
+  }
   console.log(ProfileQuery?.data);
 
   const userProfile = ProfileQuery?.data;
