@@ -218,3 +218,23 @@ export const updateUserProfile = async (token, userData) => {
 
   return data;
 };
+
+// function to change user password
+export const changeUserPassword = async (token, userPasswords) => {
+  const res = await api.put(
+    `/user/change-password`,
+    {
+      oldPassword: userPasswords.oldPassword,
+      newPassword: userPasswords.newPassowrd,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const { data } = res;
+
+  return data;
+};

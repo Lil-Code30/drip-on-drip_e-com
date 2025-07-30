@@ -1,18 +1,26 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useOutletContext } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { showToast } from "../../components/common/ToastNotify";
-import { updateUserProfile } from "../../api";
+import { updateUserProfile, changeUserPassword } from "../../api";
 
 const AccountDetails = () => {
+  const [errorMsg, setErrorMsg] = useState("");
   const { userProfile } = useOutletContext();
-  const { register, handleSubmit, reset } = useForm({
+  const updateProfileForm = useForm({
     defaultValues: {
       firstName: userProfile?.data?.firstName,
       lastName: userProfile?.data?.lastName,
       dateOfBirth: userProfile?.data?.dateOfBirth?.split("T")[0],
       gender: userProfile?.data?.gender,
+    },
+  });
+  const changePasswordForm = useForm({
+    defaultValues: {
+      oldPassword: "",
+      newPassword: "",
+      confirmPassword: "",
     },
   });
 
@@ -29,20 +37,43 @@ const AccountDetails = () => {
     },
   });
 
-  const onSubmit = (data) => {
+  const changeUserPasswordQuery = useMutation({
+    mutationFn: async (formData) => {
+      const data = await changeUserPassword(userProfile?.token, formData);
+      console.log(formData);
+      return data;
+    },
+    onSuccess: () => {
+      setErrorMsg("");
+      showToast("user password updated successfully", "success");
+    },
+    onError: (error) => {
+      setErrorMsg(`Error: ${error.response.data.message}`);
+    },
+  });
+  const onSubmitProfile = (data) => {
     updateProfileQuery.mutate(data);
+  };
+  const onSubmitPassword = (data) => {
+    console.log(data);
+
+    if (data.newPassword !== data.confirmPassword) {
+      setErrorMsg("The two password doesnot match");
+      return;
+    }
+    changeUserPasswordQuery.mutate(data);
   };
 
   useEffect(() => {
     if (userProfile) {
-      reset({
+      updateProfileForm.reset({
         firstName: userProfile?.data?.firstName,
         lastName: userProfile?.data?.lastName,
         dateOfBirth: userProfile?.data?.dateOfBirth?.split("T")[0],
         gender: userProfile?.data?.gender,
       });
     }
-  }, [userProfile, reset]);
+  }, [userProfile, updateProfileForm]);
 
   return (
     <>
@@ -59,7 +90,7 @@ const AccountDetails = () => {
               Account Information
             </h2>
             <form
-              onSubmit={handleSubmit(onSubmit)}
+              onSubmit={updateProfileForm.handleSubmit(onSubmitProfile)}
               className="py-1.5 w-full md:w-2/3"
             >
               <div class="mb-3">
@@ -73,7 +104,9 @@ const AccountDetails = () => {
                   type="text"
                   id="first-name"
                   name="firstName"
-                  {...register("firstName", { required: true })}
+                  {...updateProfileForm.register("firstName", {
+                    required: true,
+                  })}
                   class="bg-white border border-gray-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
                 />
               </div>
@@ -88,7 +121,9 @@ const AccountDetails = () => {
                   type="text"
                   id="last-name"
                   name="lastName"
-                  {...register("lastName", { required: true })}
+                  {...updateProfileForm.register("lastName", {
+                    required: true,
+                  })}
                   class="bg-white border border-gray-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
                 />
               </div>
@@ -102,7 +137,9 @@ const AccountDetails = () => {
                 <input
                   type="date"
                   id="dob"
-                  {...register("dateOfBirth", { required: true })}
+                  {...updateProfileForm.register("dateOfBirth", {
+                    required: true,
+                  })}
                   class="bg-white border border-gray-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
                 />
               </div>
@@ -117,7 +154,7 @@ const AccountDetails = () => {
                       type="radio"
                       name="gender"
                       value="male"
-                      {...register("gender")}
+                      {...updateProfileForm.register("gender")}
                     />
                   </label>
                   <label>
@@ -126,7 +163,7 @@ const AccountDetails = () => {
                       type="radio"
                       name="gender"
                       value="female"
-                      {...register("gender")}
+                      {...updateProfileForm.register("gender")}
                     />
                   </label>
                 </div>
@@ -142,7 +179,10 @@ const AccountDetails = () => {
             <h2 className="w-full bg-gray-300 border-gray-300 flex items-center justify-between py-1.5 px-1 mt-2">
               Log Informations
             </h2>
-            <form action="" className="my-2">
+            <form
+              onSubmit={changePasswordForm.handleSubmit(onSubmitPassword)}
+              className="my-2"
+            >
               <div class="mb-3">
                 <label
                   for="oldpassword"
@@ -154,7 +194,11 @@ const AccountDetails = () => {
                   type="password"
                   id="oldpassword"
                   name="oldpassword"
+                  {...changePasswordForm.register("oldPassword", {
+                    required: true,
+                  })}
                   class="bg-white border border-gray-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
+                  required
                 />
               </div>
               <div class="mb-3">
@@ -168,10 +212,14 @@ const AccountDetails = () => {
                   type="password"
                   id="newpassword"
                   name="newpassword"
+                  {...changePasswordForm.register("newPassword", {
+                    required: true,
+                  })}
                   class="bg-white border border-gray-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
+                  required
                 />
               </div>
-              <div class="mb-3">
+              <div class="mb-1">
                 <label
                   for="confirmpassword"
                   class="block mb-1 text-sm font-medium text-gray-900 "
@@ -182,9 +230,26 @@ const AccountDetails = () => {
                   type="password"
                   id="confirmpassword"
                   name="confirmpassword"
+                  {...changePasswordForm.register("confirmPassword", {
+                    required: true,
+                  })}
                   class="bg-white border border-gray-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
+                  required
                 />
               </div>
+              <div className="mb-1">
+                <Link
+                  to="/forgot-password"
+                  class="ms-auto text-sm text-blue-700 hover:underline dark:text-blue-500"
+                >
+                  Forgot Password?
+                </Link>
+              </div>
+              {errorMsg && (
+                <span className="text-red-600 my-3 text-sm text-center">
+                  {errorMsg}
+                </span>
+              )}
               <button
                 type="submit"
                 class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
