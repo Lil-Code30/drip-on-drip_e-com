@@ -40,7 +40,6 @@ const AccountDetails = () => {
   const changeUserPasswordQuery = useMutation({
     mutationFn: async (formData) => {
       const data = await changeUserPassword(userProfile?.token, formData);
-      console.log(formData)
       return data;
     },
     onSuccess: () => {

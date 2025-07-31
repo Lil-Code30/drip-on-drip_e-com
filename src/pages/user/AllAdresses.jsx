@@ -1,7 +1,54 @@
 import { Link } from "react-router-dom";
 import { X, Trash, SquarePen } from "lucide-react";
+import { useOutletContext } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { addNewUserAddress } from "../../api";
+import { showToast } from "../../components/common/ToastNotify";
 
 const AllAdressess = () => {
+  const { userProfile } = useOutletContext();
+
+  const addUserAddress = useForm({
+    defaultValues: {
+      addressNickname: "",
+      phoneNumber: "",
+      addressLine1: "",
+      addressLine2: "",
+      city: "",
+      stateOrProvince: "",
+      postalCode: "",
+      country: "",
+      isDefault: "",
+      addressType: "",
+    },
+  });
+
+  const addUserAddressQuery = useMutation({
+    mutationFn: async (formData) => {
+      const data = await addNewUserAddress(
+        userProfile?.token,
+        userProfile?.data?.id,
+        formData
+      );
+      return data;
+    },
+    onSuccess: () => {
+      showToast("New adress created successfully", "success");
+    },
+    onError: (error) => {
+      showToast(
+        `Error when creating user address ${error.response.data.message}`,
+        "error"
+      );
+    },
+  });
+
+  const onSubmitAddAddress = (data) => {
+    console.log(data);
+    addUserAddressQuery.mutate(data);
+  };
+
   return (
     <>
       <section className="w-full">
@@ -164,7 +211,10 @@ const AllAdressess = () => {
               >
                 <X />
               </button>
-              <form method="dialog">
+              <form
+                onSubmit={addUserAddress.handleSubmit(onSubmitAddAddress)}
+                method="dialog"
+              >
                 <h1 className="font-bold text-lg mb-3">Address informations</h1>
 
                 <div class="mb-3">
@@ -178,6 +228,9 @@ const AllAdressess = () => {
                     type="text"
                     id="addressnickname"
                     name="addressnickname"
+                    {...addUserAddress.register("addressnickname", {
+                      required: true,
+                    })}
                     class="bg-white border border-gray-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
                     required
                   />
@@ -193,6 +246,9 @@ const AllAdressess = () => {
                     type="text"
                     id="phonenumber"
                     name="phonenumber"
+                    {...addUserAddress.register("phonenumber", {
+                      required: true,
+                    })}
                     class="bg-white border border-gray-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
                     required
                   />
@@ -208,6 +264,9 @@ const AllAdressess = () => {
                     type="text"
                     id="addressline1"
                     name="addressline1"
+                    {...addUserAddress.register("addressline1", {
+                      required: true,
+                    })}
                     class="bg-white border border-gray-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
                     required
                   />
@@ -223,6 +282,9 @@ const AllAdressess = () => {
                     type="text"
                     id="addressline2"
                     name="addressline2"
+                    {...addUserAddress.register("addressline2", {
+                      required: true,
+                    })}
                     class="bg-white border border-gray-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
                   />
                 </div>
@@ -237,6 +299,9 @@ const AllAdressess = () => {
                     type="text"
                     id="city"
                     name="city"
+                    {...addUserAddress.register("city", {
+                      required: true,
+                    })}
                     class="bg-white border border-gray-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
                     required
                   />
@@ -252,6 +317,9 @@ const AllAdressess = () => {
                     type="text"
                     id="stateOrProvince"
                     name="stateOrProvince"
+                    {...addUserAddress.register("stateOrProvince", {
+                      required: true,
+                    })}
                     class="bg-white border border-gray-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
                     required
                   />
@@ -267,6 +335,9 @@ const AllAdressess = () => {
                     type="text"
                     id="postalCode"
                     name="postalCode"
+                    {...addUserAddress.register("postalCode", {
+                      required: true,
+                    })}
                     class="bg-white border border-gray-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
                     required
                   />
@@ -282,10 +353,19 @@ const AllAdressess = () => {
                     type="text"
                     id="country"
                     name="country"
+                    {...addUserAddress.register("country", {
+                      required: true,
+                    })}
                     class="bg-white border border-gray-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
                     required
                   />
                 </div>
+                <button
+                  type="submit"
+                  class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+                >
+                  Create
+                </button>
               </form>
             </div>
           </dialog>
@@ -296,20 +376,3 @@ const AllAdressess = () => {
 };
 
 export default AllAdressess;
-
-/*
-
-{
-  "address nickname"
-  "phoneNumber": "+1 418-123-4567",
-  "addressLine1": "123 Rue Saint-Jean",
-  "addressLine2": "Appartement 5B",
-  "city": "Québec",
-  "stateOrProvince": "Québec",
-  "postalCode": "G1R 5B1",
-  "country": "Canada",
-  "isDefault": true,
-  "addressType": "Home"
-}
-
-*/

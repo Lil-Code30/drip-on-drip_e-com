@@ -233,9 +233,37 @@ export const changeUserPassword = async (token, userPasswords) => {
       },
     }
   );
-
   const { data } = res;
-
-  console.log(userPasswords)
   return data;
+};
+
+// function to add new user's address
+export const addNewUserAddress = async (token, id, userData) => {
+  try {
+    const res = await api.post(
+      `/user/add-address`,
+      {
+        profileId: id,
+        nickname: userData.addressNickname,
+        phoneNumber: userData.phoneNumber,
+        addressLine1: userData.addressLine1,
+        addressLine2: userData.addressLine2,
+        city: userData.city,
+        stateOrProvince: userData.stateOrProvince,
+        postalCode: userData.postalCode,
+        country: userData.country,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const { data } = res;
+
+    return data;
+  } catch (err) {
+    console.log("error when creating user password " + err.message);
+  }
 };
