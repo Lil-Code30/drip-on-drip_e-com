@@ -225,7 +225,7 @@ export const changeUserPassword = async (token, userPasswords) => {
     `/user/change-password`,
     {
       oldPassword: userPasswords.oldPassword,
-      newPassword: userPasswords.newPassowrd,
+      newPassword: userPasswords.newPassword,
     },
     {
       headers: {
@@ -236,5 +236,6 @@ export const changeUserPassword = async (token, userPasswords) => {
 
   const { data } = res;
 
+  console.log(userPasswords)
   return data;
 };

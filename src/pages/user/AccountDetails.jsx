@@ -40,7 +40,7 @@ const AccountDetails = () => {
   const changeUserPasswordQuery = useMutation({
     mutationFn: async (formData) => {
       const data = await changeUserPassword(userProfile?.token, formData);
-      console.log(formData);
+      console.log(formData)
       return data;
     },
     onSuccess: () => {
@@ -55,8 +55,6 @@ const AccountDetails = () => {
     updateProfileQuery.mutate(data);
   };
   const onSubmitPassword = (data) => {
-    console.log(data);
-
     if (data.newPassword !== data.confirmPassword) {
       setErrorMsg("The two password doesnot match");
       return;
@@ -246,7 +244,7 @@ const AccountDetails = () => {
                 </Link>
               </div>
               {errorMsg && (
-                <span className="text-red-600 my-3 text-sm text-center">
+                <span className="text-red-600 my-3 text-sm text-center block">
                   {errorMsg}
                 </span>
               )}
