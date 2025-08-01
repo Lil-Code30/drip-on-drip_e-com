@@ -237,6 +237,18 @@ export const changeUserPassword = async (token, userPasswords) => {
   return data;
 };
 
+// function to get all addresses of a specifique profile
+export const getAllProfileAddresses = async (token, profileId) => {
+  const res = await api.get(`/user/get-addresses?profileId=${profileId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const { data } = res;
+  return data;
+};
+
 // function to add new user's address
 export const addNewUserAddress = async (token, id, userData) => {
   try {
@@ -266,4 +278,17 @@ export const addNewUserAddress = async (token, id, userData) => {
   } catch (err) {
     console.log("error when creating user password " + err.message);
   }
+};
+
+//function to delete user profile
+export const deleteUserAddress = async (token, addressId) => {
+  const res = await api.delete(`/user/delete-address?addressId=${addressId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const { data } = res;
+
+  return data;
 };

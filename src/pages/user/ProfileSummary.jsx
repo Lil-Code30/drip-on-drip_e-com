@@ -5,12 +5,13 @@ import { useUser } from "../../contexts/UserInfosContext";
 const ProfileSummary = () => {
   const navigate = useNavigate();
   const { handleUser } = useUser();
-  const { userProfile } = useOutletContext();
+  const { userProfile, userAdresses } = useOutletContext();
   const handleLogout = () => {
     localStorage.removeItem("userInfos");
     handleUser({});
     navigate("/");
   };
+
   return (
     <section className="w-full">
       <div className="flex  items-center justify-between">
@@ -68,9 +69,22 @@ const ProfileSummary = () => {
             <div className="flex items-center justify-around  py-2">
               <Truck size="50" />
               <div className="text-sm ">
-                <p>John Doe</p>
-                <p>123 rue des roses</p>
-                <p>Qc, Qc, Canada</p>
+                <p>
+                  {userProfile?.data?.firstName} {userProfile?.data?.lastName}
+                </p>
+                {userAdresses?.length > 0 ? (
+                  userAdresses?.map((item) => {
+                    return (
+                      <>
+                        <p>{item?.addressLine1}</p>
+                        <p>{item?.addressLine2}</p>
+                        <p>{item?.postalCode}</p>
+                      </>
+                    );
+                  })[0]
+                ) : (
+                  <p>No Address added</p>
+                )}
               </div>
             </div>
           </div>

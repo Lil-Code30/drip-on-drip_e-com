@@ -1,15 +1,15 @@
 import { Link, Outlet } from "react-router-dom";
 import { useUser } from "../../contexts/UserInfosContext";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Loading from "../../components/common/Loading";
 import Error from "../../components/common/Error";
-import { getUserProfile } from "../../api";
+import { getUserProfile, getAllProfileAddresses } from "../../api";
 import { showToast } from "../../components/common/ToastNotify";
 
 const Profile = () => {
+  const queryClient = useQueryClient();
+
   const { userInfos, handleUser } = useUser();
-  let loading = false;
-  let error = false;
 
   const ProfileQuery = useQuery({
     queryKey: ["profile"],
@@ -17,6 +17,20 @@ const Profile = () => {
       const data = await getUserProfile(userInfos.token);
       return data;
     },
+  });
+
+  const ProfileAddressesQuery = useQuery({
+    queryKey: ["addresses", ProfileQuery?.data?.id],
+    queryFn: async () => {
+      const userData = queryClient.getQueryData(["profile"]);
+      const data = await getAllProfileAddresses(
+        userInfos.token,
+        userData.data.id
+      );
+
+      return data;
+    },
+    enabled: !!ProfileQuery,
   });
 
   if (!userInfos?.token) {
@@ -55,6 +69,7 @@ const Profile = () => {
   }
 
   const userProfile = ProfileQuery?.data;
+  const userAdresses = ProfileAddressesQuery?.data;
 
   return (
     <>
@@ -103,12 +118,12 @@ const Profile = () => {
           </div>
         </div>
         <div className="w-full md:w-[80%] p-2">
-          {loading ? (
+          {ProfileAddressesQuery.isFetching ? (
             <Loading />
-          ) : error ? (
+          ) : ProfileAddressesQuery.isError ? (
             <Error error="Error when fetching user profile" />
           ) : (
-            <Outlet context={{ userInfos, userProfile }} />
+            <Outlet context={{ userInfos, userProfile, userAdresses }} />
           )}
         </div>
       </section>

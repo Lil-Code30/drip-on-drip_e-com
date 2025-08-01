@@ -1,13 +1,14 @@
 import { Link } from "react-router-dom";
-import { X, Trash, SquarePen } from "lucide-react";
+import { X } from "lucide-react";
 import { useOutletContext } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
-import { addNewUserAddress } from "../../api";
+import { addNewUserAddress, deleteUserAddress } from "../../api";
 import { showToast } from "../../components/common/ToastNotify";
+import AddressCard from "../../components/profile/AddressCard";
 
 const AllAdressess = () => {
-  const { userProfile } = useOutletContext();
+  const { userProfile, userAdresses } = useOutletContext();
 
   const addUserAddress = useForm({
     defaultValues: {
@@ -34,6 +35,19 @@ const AllAdressess = () => {
       return data;
     },
     onSuccess: () => {
+      addUserAddress.reset({
+        addressNickname: "",
+        phoneNumber: "",
+        addressLine1: "",
+        addressLine2: "",
+        city: "",
+        stateOrProvince: "",
+        postalCode: "",
+        country: "",
+        isDefault: "",
+        addressType: "",
+      });
+      document.getElementById("add_address_modal").close();
       showToast("New adress created successfully", "success");
     },
     onError: (error) => {
@@ -44,9 +58,29 @@ const AllAdressess = () => {
     },
   });
 
+  const deleteUserAddressQuery = useMutation({
+    mutationFn: async (formData) => {
+      const data = await deleteUserAddress(userProfile?.token, formData.id);
+      return data;
+    },
+    onSuccess: () => {
+      showToast("Address deleted successfully", "success");
+    },
+    onError: (error) => {
+      showToast(
+        `Error when deleting user address ${error.response.data.message}`,
+        "error"
+      );
+    },
+  });
+
   const onSubmitAddAddress = (data) => {
-    console.log(data);
     addUserAddressQuery.mutate(data);
+  };
+
+  const onDeleteAddress = (id) => {
+    const data = { id };
+    deleteUserAddressQuery.mutate(data);
   };
 
   return (
@@ -61,134 +95,19 @@ const AllAdressess = () => {
         <div className="w-full  flex flex-col-reverse md:flex-row justify-between">
           <div className=" w-full md:w-[80%]">
             <h1 className="text-xl font-semibold">Adressess</h1>
-            <div className="flex w-full  flex-wrap gap-2 mt-2 ">
-              <div className="bg-gray-700/50 w-full md:w-fit p-2 text-sm rounded-md relative">
-                <p>
-                  <span className="font-bold">Address nickname : </span>
-                  <span>quebec-1</span>
-                </p>
-                <p>
-                  <span className="font-bold">Phone Number : </span>
-                  <span>+1 234 321-6789</span>
-                </p>
-                <p>
-                  <span className="font-bold">Address Line 1 : </span>
-                  <span>123 streat dev tex</span>
-                </p>
-                <p>
-                  <span className="font-bold">Address Line 2: </span>
-                  <span>suite 21B</span>
-                </p>
-                <p>
-                  <span className="font-bold">City : </span>
-                  <span>Quebec City</span>
-                </p>
-                <p>
-                  <span className="font-bold">State or Province : </span>
-                  <span>Quebec</span>
-                </p>
-                <p>
-                  <span className="font-bold">Postal Code: </span>
-                  <span>1X2 G1M</span>
-                </p>
-                <p>
-                  <span className="font-bold">Country : </span>
-                  <span>Canada</span>
-                </p>
-                <div className="absolute right-2 bottom-2 flex gap-x-2 items-center ">
-                  <button>
-                    <Trash size={15} color="red" />
-                  </button>
-                  <button>
-                    <SquarePen size={15} color="orange" />
-                  </button>
-                </div>
+            {userAdresses.length > 0 ? (
+              <div className="flex w-full  flex-wrap gap-2 mt-2 ">
+                {userAdresses.map((item) => (
+                  <AddressCard
+                    key={item.id}
+                    addressInfos={item}
+                    onDeleteAddress={onDeleteAddress}
+                  />
+                ))}
               </div>
-              <div className="bg-gray-700/50 w-full md:w-fit p-2 text-sm rounded-md relative">
-                <p>
-                  <span className="font-bold">Address nickname : </span>
-                  <span>quebec-1</span>
-                </p>
-                <p>
-                  <span className="font-bold">Phone Number : </span>
-                  <span>+1 234 321-6789</span>
-                </p>
-                <p>
-                  <span className="font-bold">Address Line 1 : </span>
-                  <span>123 streat dev tex</span>
-                </p>
-                <p>
-                  <span className="font-bold">Address Line 2: </span>
-                  <span>suite 21B</span>
-                </p>
-                <p>
-                  <span className="font-bold">City : </span>
-                  <span>Quebec City</span>
-                </p>
-                <p>
-                  <span className="font-bold">State or Province : </span>
-                  <span>Quebec</span>
-                </p>
-                <p>
-                  <span className="font-bold">Postal Code: </span>
-                  <span>1X2 G1M</span>
-                </p>
-                <p>
-                  <span className="font-bold">Country : </span>
-                  <span>Canada</span>
-                </p>
-                <div className="absolute right-2 bottom-2 flex gap-x-2 items-center ">
-                  <button>
-                    <Trash size={15} color="red" />
-                  </button>
-                  <button>
-                    <SquarePen size={15} color="orange" />
-                  </button>
-                </div>
-              </div>
-              <div className="bg-gray-700/50 w-full md:w-fit p-2 text-sm rounded-md relative">
-                <p>
-                  <span className="font-bold">Address nickname : </span>
-                  <span>quebec-1</span>
-                </p>
-                <p>
-                  <span className="font-bold">Phone Number : </span>
-                  <span>+1 234 321-6789</span>
-                </p>
-                <p>
-                  <span className="font-bold">Address Line 1 : </span>
-                  <span>123 streat dev tex</span>
-                </p>
-                <p>
-                  <span className="font-bold">Address Line 2: </span>
-                  <span>suite 21B</span>
-                </p>
-                <p>
-                  <span className="font-bold">City : </span>
-                  <span>Quebec City</span>
-                </p>
-                <p>
-                  <span className="font-bold">State or Province : </span>
-                  <span>Quebec</span>
-                </p>
-                <p>
-                  <span className="font-bold">Postal Code: </span>
-                  <span>1X2 G1M</span>
-                </p>
-                <p>
-                  <span className="font-bold">Country : </span>
-                  <span>Canada</span>
-                </p>
-                <div className="absolute right-2 bottom-2 flex gap-x-2 items-center ">
-                  <button>
-                    <Trash size={15} color="red" />
-                  </button>
-                  <button>
-                    <SquarePen size={15} color="orange" />
-                  </button>
-                </div>
-              </div>
-            </div>
+            ) : (
+              <h2>No Address added </h2>
+            )}
           </div>
           <div>
             <button
@@ -226,9 +145,9 @@ const AllAdressess = () => {
                   </label>
                   <input
                     type="text"
-                    id="addressnickname"
-                    name="addressnickname"
-                    {...addUserAddress.register("addressnickname", {
+                    id="addressNickname"
+                    name="addressNickname"
+                    {...addUserAddress.register("addressNickname", {
                       required: true,
                     })}
                     class="bg-white border border-gray-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
@@ -244,9 +163,9 @@ const AllAdressess = () => {
                   </label>
                   <input
                     type="text"
-                    id="phonenumber"
+                    id="phoneNumber"
                     name="phonenumber"
-                    {...addUserAddress.register("phonenumber", {
+                    {...addUserAddress.register("phoneNumber", {
                       required: true,
                     })}
                     class="bg-white border border-gray-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
@@ -262,9 +181,9 @@ const AllAdressess = () => {
                   </label>
                   <input
                     type="text"
-                    id="addressline1"
-                    name="addressline1"
-                    {...addUserAddress.register("addressline1", {
+                    id="addressLine1"
+                    name="addressLine1"
+                    {...addUserAddress.register("addressLine1", {
                       required: true,
                     })}
                     class="bg-white border border-gray-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
@@ -280,9 +199,9 @@ const AllAdressess = () => {
                   </label>
                   <input
                     type="text"
-                    id="addressline2"
-                    name="addressline2"
-                    {...addUserAddress.register("addressline2", {
+                    id="addressLine2"
+                    name="addressLine2"
+                    {...addUserAddress.register("addressLine2", {
                       required: true,
                     })}
                     class="bg-white border border-gray-500 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
