@@ -1,16 +1,26 @@
+import { useState, useEffect } from "react";
 import { LogOut, SquareUserRound, Truck, Wallet } from "lucide-react";
 import { Link, useNavigate, useOutletContext } from "react-router-dom";
 import { useUser } from "../../contexts/UserInfosContext";
+import { useWishList } from "../../contexts/WishListContext";
 
 const ProfileSummary = () => {
   const navigate = useNavigate();
   const { handleUser } = useUser();
   const { userProfile, userAdresses } = useOutletContext();
+  const { wishList } = useWishList();
+
+  const [wishListDB, setWishList] = useState(wishList);
+
   const handleLogout = () => {
     localStorage.removeItem("userInfos");
     handleUser({});
     navigate("/");
   };
+
+  useEffect(() => {
+    setWishList(wishList);
+  }, [wishList]);
 
   return (
     <section className="w-full">
@@ -114,7 +124,7 @@ const ProfileSummary = () => {
             </div>
           </div>
         </div>
-        <div className="md:w-[70%]">
+        <div className="md:w-[50%]">
           <div className="border rounded my-2">
             <h2 className=" bg-gray-300 border-gray-300 rounded flex items-center justify-between py-1.5 px-1">
               <span className="uppercase">Wish List</span>{" "}
@@ -122,36 +132,63 @@ const ProfileSummary = () => {
                 All Products
               </Link>
             </h2>
-            <div className="flex items-center justify-around  py-2">
-              <Wallet size="50" />
-              <div className="text-sm ">
-                <p>
-                  {" "}
-                  <span className="font-semibold">Product Name : </span>
-                  Air Jordan
-                </p>
-                <p>
-                  {" "}
-                  <span className="font-semibold">Price : </span> 23.99 $CAD
-                </p>
-
-                <button>Add to Cart</button>
-              </div>
-            </div>
-            <div className="flex items-center justify-around  py-2">
-              <Wallet size="50" />
-              <div className="text-sm ">
-                <p>
-                  {" "}
-                  <span className="font-semibold">Product Name : </span>
-                  MUSWDRFG
-                </p>
-                <p>
-                  {" "}
-                  <span className="font-semibold">Price : </span> 30.99 $CAD
-                </p>
-              </div>
-            </div>
+            {wishListDB.length > 0 ? (
+              wishListDB.length === 1 ? (
+                wishListDB.map((item) => {
+                  return (
+                    <div
+                      key={item.id}
+                      className="flex items-center justify-around  py-2"
+                    >
+                      <div>
+                        <img
+                          className="size-20"
+                          src={item.images[0]}
+                          alt={item.name}
+                        />
+                      </div>
+                      <div className="text-sm ">
+                        <p>{item.name}</p>
+                        <p>
+                          {" "}
+                          <span className="font-semibold">Price : </span>{" "}
+                          {item.price} $CAD
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                wishListDB.slice(0, 2).map((item) => {
+                  return (
+                    <div
+                      key={item.id}
+                      className="flex items-center justify-around w-full py-2"
+                    >
+                      <div className="w-[40%] ">
+                        <img
+                          className="size-20 "
+                          src={item.images[0]}
+                          alt={item.name}
+                        />
+                      </div>
+                      <div className="text-sm w-[50%]">
+                        <p>{item.name}</p>
+                        <p>
+                          {" "}
+                          <span className="font-semibold">Price : </span>{" "}
+                          {item.price} $CAD
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })
+              )
+            ) : (
+              <p className="text-center py-2">
+                No Products added to your wishlist
+              </p>
+            )}
           </div>
         </div>
       </div>

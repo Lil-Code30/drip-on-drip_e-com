@@ -1,8 +1,10 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 const UserInfosContext = createContext();
 
 export function UserProvider({ children }) {
+  const queryClient = useQueryClient();
   const [userInfos, setUserInfos] = useState(
     JSON.parse(localStorage.getItem("userInfos")) || {}
   );
@@ -12,8 +14,9 @@ export function UserProvider({ children }) {
   };
 
   useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: ["profile", "addresses"] });
     localStorage.setItem("userInfos", JSON.stringify(userInfos));
-  }, [userInfos]);
+  }, [userInfos, queryClient]);
 
   return (
     <UserInfosContext.Provider value={{ userInfos, handleUser }}>

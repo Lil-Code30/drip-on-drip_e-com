@@ -1,13 +1,14 @@
 import { Link } from "react-router-dom";
 import { X } from "lucide-react";
 import { useOutletContext } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { addNewUserAddress, deleteUserAddress } from "../../api";
 import { showToast } from "../../components/common/ToastNotify";
 import AddressCard from "../../components/profile/AddressCard";
 
 const AllAdressess = () => {
+  const queryClient = useQueryClient();
   const { userProfile, userAdresses } = useOutletContext();
 
   const addUserAddress = useForm({
@@ -47,6 +48,8 @@ const AllAdressess = () => {
         isDefault: "",
         addressType: "",
       });
+      // invalidate and then refetch (useful when there is a modification on the data being fetch)
+      queryClient.invalidateQueries({ queryKey: ["addresses"] });
       document.getElementById("add_address_modal").close();
       showToast("New adress created successfully", "success");
     },
@@ -64,6 +67,7 @@ const AllAdressess = () => {
       return data;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["addresses"] });
       showToast("Address deleted successfully", "success");
     },
     onError: (error) => {

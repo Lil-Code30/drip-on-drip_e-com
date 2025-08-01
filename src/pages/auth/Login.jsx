@@ -18,7 +18,6 @@ export default function Login() {
     onSuccess: (data) => {
       localStorage.setItem("userInfos", JSON.stringify(data));
       handleUser(data);
-
       setErrorMsg("");
       showToast("user login successfully", "success");
       navigate("/");

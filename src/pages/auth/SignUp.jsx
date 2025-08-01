@@ -18,7 +18,6 @@ export default function SignUp() {
     onSuccess: (data) => {
       localStorage.setItem("userInfos", JSON.stringify(data));
       handleUser(data);
-
       setErrorMsg("");
       showToast("Account created successfully", "success");
       navigate("/");
