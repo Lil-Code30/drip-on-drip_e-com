@@ -33,10 +33,9 @@ DripOnDrip is a modern, full-stack e-commerce web application for clothing. This
 *   **use-debounce**: A React hook to debounce callbacks.
 *   **daisyUI**: A component library for Tailwind CSS.
 
-### Backend (Coming Soon)
+### Backend
 
-*   **Node.js**: A JavaScript runtime built on Chrome's V8 JavaScript engine.
-*   **PostgreSQL**: A powerful, open-source object-relational database system.
+The backend for this project is located in a separate repository. You can find it here: [drip-on-drip_e-com_backend](https://github.com/Lil-Code30/drip-on-drip_e-com_backend)
 
 ---
 
