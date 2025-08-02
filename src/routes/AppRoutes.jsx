@@ -21,6 +21,8 @@ import Checkout from "../pages/checkout/Checkout";
 import WishList from "../pages/products/WishList";
 import NotFound from "../pages/NotFound";
 
+import { StripeProvider } from "../contexts/StripeContext";
+
 export default function AppRouter() {
   return (
     <BrowserRouter>
@@ -49,7 +51,14 @@ export default function AppRouter() {
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/verify-email" element={<ConfirmEmail />} />
           <Route path="/cart" element={<Cart />} />
-          <Route path="/checkout" element={<Checkout />} />
+          <Route
+            path="/checkout"
+            element={
+              <StripeProvider>
+                <Checkout />
+              </StripeProvider>
+            }
+          />
           <Route path="/wishlist" element={<WishList />} />
           <Route path="*" element={<NotFound />} />
         </Route>

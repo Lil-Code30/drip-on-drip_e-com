@@ -292,3 +292,25 @@ export const deleteUserAddress = async (token, addressId) => {
 
   return data;
 };
+
+// function to create a payment
+export const createPayment = async (
+  token,
+  userId,
+  orderItems,
+  checkoutData
+) => {
+  const res = await api.post(
+    `/payment/create-payment-intent`,
+    { userId, orderItems, checkoutData, currency: "cad" },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const { data } = res;
+
+  return data;
+};
