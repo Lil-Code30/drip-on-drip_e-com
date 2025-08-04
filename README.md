@@ -62,6 +62,20 @@ npm run dev
 
 ---
 
+## 💳 Testing Payments
+
+You can use the following test card details provided by Stripe to simulate payments in the development environment:
+
+| Card Brand      | Card Number        | Expiry Date | CVC |
+| --------------- | ------------------ | ----------- | --- |
+| Visa            | 4242 4242 4242 4242 | Any future  | 123 |
+| Mastercard      | 5555 5555 5555 5555 | Any future  | 123 |
+| American Express| 3782 8224 6310 005  | Any future  | 123 |
+
+For more test cards and payment methods, refer to the official [Stripe testing documentation](https://stripe.com/docs/testing).
+
+---
+
 ## 🤝 Contributing
 
 Contributions are welcome! If you'd like to contribute to this project, please follow these steps:
