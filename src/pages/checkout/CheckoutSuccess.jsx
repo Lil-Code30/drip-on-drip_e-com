@@ -1,20 +1,16 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useCart } from "../../contexts/CartContext";
 import { showToast } from "../../components/common/ToastNotify";
 
 export default function CheckoutSuccess() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { clearUserCartFn } = useCart();
   const [orderDetails, setOrderDetails] = useState(null);
 
   useEffect(() => {
     // Get order details from location state
     if (location.state?.orderDetails) {
       setOrderDetails(location.state.orderDetails);
-      // Clear the cart after successful payment
-      clearUserCartFn();
       showToast(
         "Order placed successfully! Your cart has been cleared.",
         "success"
@@ -23,7 +19,7 @@ export default function CheckoutSuccess() {
       // If no order details, redirect to home
       navigate("/");
     }
-  }, [location.state, clearUserCartFn, navigate]);
+  }, [location.state, navigate]);
 
   const handleContinueShopping = () => {
     navigate("/shop");
