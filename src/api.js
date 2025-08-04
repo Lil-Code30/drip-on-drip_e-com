@@ -293,16 +293,23 @@ export const deleteUserAddress = async (token, addressId) => {
   return data;
 };
 
-// function to create a payment
-export const createPayment = async (
+// function to create a payment intent (without order creation)
+export const createPaymentIntent = async (
   token,
   userId,
   orderItems,
-  checkoutData
+  checkoutData,
+  additionalInfo = ""
 ) => {
   const res = await api.post(
-    `/payment/create-payment-intent`,
-    { userId, orderItems, checkoutData, currency: "cad" },
+    `/checkout/create-payment-intent`,
+    {
+      userId,
+      orderItems,
+      checkoutData,
+      additionalInfo,
+      currency: "CAD",
+    },
     {
       headers: {
         Authorization: `Bearer ${token}`,

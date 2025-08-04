@@ -18,6 +18,7 @@ import ResetPassword from "../pages/auth/ResetPassword";
 import ConfirmEmail from "../pages/auth/ConfirmEmail";
 import Cart from "../pages/cart/Cart";
 import Checkout from "../pages/checkout/Checkout";
+import CheckoutSuccess from "../pages/checkout/CheckoutSuccess";
 import WishList from "../pages/products/WishList";
 import NotFound from "../pages/NotFound";
 
@@ -59,6 +60,7 @@ export default function AppRouter() {
               </StripeProvider>
             }
           />
+          <Route path="/checkout/success" element={<CheckoutSuccess />} />
           <Route path="/wishlist" element={<WishList />} />
           <Route path="*" element={<NotFound />} />
         </Route>

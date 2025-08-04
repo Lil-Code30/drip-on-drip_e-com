@@ -107,13 +107,13 @@ export default function BillingInfos({ checkoutForm }) {
           />
         </div>
         <div className="w-[50%] flex flex-col">
-          <label htmlFor="billingPhone">
+          <label htmlFor="billingPhoneNumber">
             Phone Number <span className="text-red-500">*</span>
           </label>
           <input
             type="tel"
-            name="billingPhone"
-            {...checkoutForm.register("billingPhone")}
+            name="billingPhoneNumber"
+            {...checkoutForm.register("billingPhoneNumber")}
             className="rounded border border-gray-300 p-2"
           />
         </div>

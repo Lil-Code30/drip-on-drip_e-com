@@ -13,6 +13,8 @@ const StripePaymentForm = ({
   clientSecret,
   onPaymentSuccess,
   onPaymentError,
+  isProcessing: isProcessingProp,
+  onPaymentStart,
 }) => {
   const stripe = useStripe();
   const elements = useElements();
@@ -22,7 +24,7 @@ const StripePaymentForm = ({
     style: {
       base: {
         fontSize: "16px",
-        color: "424770",
+        color: "#424770",
         "::placeholder": {
           color: "#aab7c4",
         },
@@ -32,12 +34,16 @@ const StripePaymentForm = ({
       },
     },
   };
+
   const handlePayment = async () => {
     if (!stripe || !elements || !clientSecret) {
       showToast("Stripe is not loaded yet. Please try again later.", "error");
       return;
     }
 
+    if (onPaymentStart) {
+      onPaymentStart();
+    }
     setIsProcessing(true);
 
     const cardNumberElement = elements.getElement(CardNumberElement);
@@ -45,14 +51,14 @@ const StripePaymentForm = ({
       clientSecret,
       {
         payment_method: {
-          card: cardElementOptions,
+          card: cardNumberElement,
           billing_details: {
             name:
               checkoutForm.getValues("billingFirstName") +
               " " +
               checkoutForm.getValues("billingLastName"),
             email: checkoutForm.getValues("billingEmail"),
-            phone: checkoutForm.getValues("billingPhone"),
+            phone: checkoutForm.getValues("billingPhoneNumber"),
             address: {
               line1: checkoutForm.getValues("billingAddressLine1"),
               line2: checkoutForm.getValues("billingAddressLine2"),
@@ -73,6 +79,7 @@ const StripePaymentForm = ({
       showToast(`Payment failed: ${error.message}`, "error");
     } else {
       onPaymentSuccess(paymentIntent);
+      showToast("Payment successful!", "success");
     }
   };
 
@@ -113,8 +120,22 @@ const StripePaymentForm = ({
           </div>
         </div>
       </div>
-      {isProcessing && (
-        <div className="text-center text-gray-600">Processing...</div>
+
+      {clientSecret && (
+        <button
+          type="button"
+          onClick={handlePayment}
+          disabled={isProcessing || isProcessingProp}
+          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+        >
+          {isProcessing || isProcessingProp ? "Processing..." : "Pay Now"}
+        </button>
+      )}
+
+      {(isProcessing || isProcessingProp) && (
+        <div className="text-center text-gray-600 text-sm">
+          Please wait while we process your payment...
+        </div>
       )}
     </div>
   );

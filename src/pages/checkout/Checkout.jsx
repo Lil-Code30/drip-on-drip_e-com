@@ -1,17 +1,16 @@
 import { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useCart } from "../../contexts/CartContext";
 import ShippingInfos from "../../components/checkout/ShippingInfos";
 import BillingInfos from "../../components/checkout/BillingInfos";
 import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
-import { createPayment } from "../../api";
+import { createPaymentIntent } from "../../api";
 import { useUser } from "../../contexts/UserInfosContext";
-import {
-  PayPal,
-  DebitOrCreditCard,
-} from "../../components/product/PaymentOption";
+import { PayPal } from "../../components/product/PaymentOption";
 import StripePaymentForm from "../../components/checkout/StripePaymentForm";
+import Loading from "../../components/common/Loading";
+
 export default function Checkout() {
   const [isShipAddress, setIsShipAddress] = useState(false);
   const [isOptionMethod, setIsOptionMethod] = useState("stripe");
@@ -19,14 +18,17 @@ export default function Checkout() {
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [clientSecret, setClientSecret] = useState(null);
   const [orderId, setOrderId] = useState(null);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const { userInfos } = useUser();
+  const { clearUserCartFn } = useCart();
+  const navigate = useNavigate();
 
   const checkoutForm = useForm({
     defaultValues: {
       billingFirstName: "",
       billingLastName: "",
       billingEmail: "",
-      billingPhone: "",
+      billingPhoneNumber: "",
       billingAddressLine1: "",
       billingAddressLine2: "",
       billingCity: "",
@@ -36,7 +38,7 @@ export default function Checkout() {
       shippingFirstName: "",
       shippingLastName: "",
       shippingEmail: "",
-      shippingPhone: "",
+      shippingPhoneNumber: "",
       shippingAddressLine1: "",
       shippingAddressLine2: "",
       shippingCity: "",
@@ -60,7 +62,7 @@ export default function Checkout() {
   const paymentMethods = [
     {
       id: "stripe",
-      name: "Credit/Debit Card (Stripe)",
+      name: "Credit/Debit Card",
     },
     {
       id: "paypal",
@@ -68,7 +70,8 @@ export default function Checkout() {
     },
   ];
 
-  const placeOrderMutation = useMutation({
+  // STEP 1: Create order + payment intent (order status = "pending")
+  const createPaymentIntentMutation = useMutation({
     mutationFn: async (checkoutData) => {
       const orderItems = cart.map((item) => ({
         productId: item.productId,
@@ -76,40 +79,120 @@ export default function Checkout() {
         price: item.price,
       }));
 
-      const data = await createPayment(
+      const data = await createPaymentIntent(
         userInfos.token,
         userInfos.user.userId,
         orderItems,
-        checkoutData
+        checkoutData,
+        checkoutData.orderNote || ""
       );
       return data;
     },
     onSuccess: (data) => {
-      console.log("Order placed successfully:", data);
-      setClientSecret(data.paymentIntent.client_secret);
-      setOrderId(data.orderId);
+      // Store the response data
+      setClientSecret(data.clientSecret);
+      setOrderId(data.orderId); // Store the orderId from backend
+      setPaymentError(null);
+      setIsProcessingPayment(false);
+
+      console.log("✅ Ready for payment step");
+      console.log("Order ID:", data.orderId);
+
+      // Show success message
+      setPaymentSuccess(true);
+      setTimeout(() => setPaymentSuccess(false), 3000); // Clear after 3 seconds
+
+      // NOTE: Order exists in database but payment not completed yet
+      // Show success message that order is created
+      // But don't redirect yet - wait for payment
     },
     onError: (error) => {
-      console.log("Error when placing order: " + error.response.data.message);
-      setPaymentError(error.response.data.message);
+      console.log(
+        "Error creating order: " + error.response?.data?.message ||
+          error.message
+      );
+
+      setPaymentError(
+        error.response?.data?.message || "Failed to create order"
+      );
+      setIsProcessingPayment(false);
     },
   });
 
   // handle success payment
-  const handlePaymentSuccess = (paymentResult) => {
+  const handlePaymentSuccess = async (paymentResult) => {
     console.log("Payment successful:", paymentResult);
     setPaymentSuccess(true);
     setPaymentError(null);
+    setIsProcessingPayment(false);
+
+    // Get form data
+    const formData = checkoutForm.getValues();
+
+    // Prepare order details for success page
+    const successOrderDetails = {
+      orderId: orderId,
+      total: dataInfos.total,
+      subtotal: dataInfos.subtotal,
+      tax: dataInfos.tax,
+      items: cart, // Include cart items for order summary
+      billingFirstName: formData.billingFirstName,
+      billingLastName: formData.billingLastName,
+      billingEmail: formData.billingEmail,
+      billingPhoneNumber: formData.billingPhoneNumber,
+      billingAddressLine1: formData.billingAddressLine1,
+      billingAddressLine2: formData.billingAddressLine2,
+      billingCity: formData.billingCity,
+      billingState: formData.billingState,
+      billingPostalCode: formData.billingPostalCode,
+      billingCountry: formData.billingCountry,
+      shippingFirstName:
+        formData.shippingFirstName || formData.billingFirstName,
+      shippingLastName: formData.shippingLastName || formData.billingLastName,
+      shippingEmail: formData.shippingEmail || formData.billingEmail,
+      shippingPhoneNumber:
+        formData.shippingPhoneNumber || formData.billingPhoneNumber,
+      shippingAddressLine1:
+        formData.shippingAddressLine1 || formData.billingAddressLine1,
+      shippingAddressLine2:
+        formData.shippingAddressLine2 || formData.billingAddressLine2,
+      shippingCity: formData.shippingCity || formData.billingCity,
+      shippingState: formData.shippingState || formData.billingState,
+      shippingPostalCode:
+        formData.shippingPostalCode || formData.billingPostalCode,
+      shippingCountry: formData.shippingCountry || formData.billingCountry,
+      paymentMethod: isOptionMethod,
+      paymentStatus: "succeeded",
+      transactionId: paymentResult.id,
+    };
+
+    // Clear cart after successful payment
+    clearUserCartFn();
+
+    // Redirect to success page with order details
+    navigate("/checkout/success", {
+      state: { orderDetails: successOrderDetails },
+    });
   };
 
   const handlePaymentError = (error) => {
     console.error("Payment error:", error);
     setPaymentError(error.message);
     setPaymentSuccess(false);
+    setIsProcessingPayment(false);
   };
 
   // function to verify which option method is selected
   const displayPaymentField = () => {
+    // Only show payment form if order is prepared (clientSecret exists)
+    if (!clientSecret) {
+      return (
+        <div className="text-center py-4 text-gray-500">
+          Click "PREPARE PAYMENT" to set up your payment method
+        </div>
+      );
+    }
+
     switch (isOptionMethod) {
       case "stripe":
         return (
@@ -118,6 +201,8 @@ export default function Checkout() {
             clientSecret={clientSecret}
             onPaymentError={handlePaymentError}
             onPaymentSuccess={handlePaymentSuccess}
+            isProcessing={isProcessingPayment}
+            onPaymentStart={() => setIsProcessingPayment(true)}
           />
         );
       case "paypal":
@@ -147,12 +232,17 @@ export default function Checkout() {
       </div>
     );
   });
+
   const paymentMethodsEl = paymentMethods.map((method) => {
     return (
       <label
         key={method.id}
-        className={`border flex items-center justify-center gap-x-1 border-gray-400 w-30 h-20 p-3 rounded hover:cursor-pointer hover:bg-gray-200 transition-all duration-300 ease-in ${
+        className={`border flex items-center justify-center gap-x-1 border-gray-400 w-30 h-20 p-3 rounded transition-all duration-300 ease-in ${
           isOptionMethod === method.id ? "bg-gray-200" : ""
+        } ${
+          clientSecret
+            ? "hover:cursor-pointer hover:bg-gray-200"
+            : "opacity-50 cursor-not-allowed"
         }`}
       >
         <p className="text-sm">{method.name}</p>
@@ -161,6 +251,7 @@ export default function Checkout() {
           value={method.id}
           name="paymentMethod"
           id="paymentMethod"
+          disabled={!clientSecret}
           onChange={() => setIsOptionMethod(method.id)}
         />
       </label>
@@ -168,11 +259,57 @@ export default function Checkout() {
   });
 
   const onSubmit = (data) => {
-    placeOrderMutation.mutate(data);
+    // Validate required fields
+    const requiredFields = [
+      "billingFirstName",
+      "billingLastName",
+      "billingEmail",
+      "billingPhoneNumber",
+      "billingAddressLine1",
+      "billingCity",
+      "billingState",
+      "billingPostalCode",
+      "billingCountry",
+    ];
+
+    const missingFields = requiredFields.filter((field) => !data[field]);
+
+    if (missingFields.length > 0) {
+      setPaymentError(
+        `Please fill in all required fields: ${missingFields.join(", ")}`
+      );
+      return;
+    }
+
+    // If payment is already prepared, trigger payment
+    if (clientSecret && isOptionMethod === "stripe") {
+      // Payment form will handle the actual payment
+      return;
+    }
+
+    // For Stripe, create payment intent first
+    if (isOptionMethod === "stripe") {
+      setIsProcessingPayment(true);
+      setPaymentError(null); // Clear any previous errors
+      createPaymentIntentMutation.mutate(data);
+    } else {
+      // For other payment methods, handle differently
+      console.log("Other payment method selected:", isOptionMethod);
+    }
   };
 
   return (
     <>
+      {/* Full-screen loading overlay */}
+      {createPaymentIntentMutation.isLoading && (
+        <Loading fullScreen={true} message="Preparing payment..." />
+      )}
+
+      {/* Payment processing overlay */}
+      {isProcessingPayment && !createPaymentIntentMutation.isLoading && (
+        <Loading fullScreen={true} message="Processing payment..." />
+      )}
+
       <form
         onSubmit={checkoutForm.handleSubmit(onSubmit)}
         className="flex flex-col md:flex-row  gap-y-3 md:gap-x-3"
@@ -215,14 +352,6 @@ export default function Checkout() {
                 placeholder="Notes about your order, e.g. special notes for delivery."
                 className="border border-gray-400 w-full my-1 p-1 rounded"
               ></textarea>
-              {paymentError && (
-                <div className="text-red-500 text-sm">{paymentError}</div>
-              )}
-              {paymentSuccess && (
-                <div className="text-green-500 text-sm">
-                  Payment successful! Order ID: {orderId}
-                </div>
-              )}
             </section>
           </div>
         </div>
@@ -254,12 +383,21 @@ export default function Checkout() {
           </h3>
           <button
             type="submit"
-            className="flex items-center justify-center w-full gap-x-1  bg-orange-500 text-white h-9 rounded font-medium px-1"
+            disabled={
+              createPaymentIntentMutation.isLoading || isProcessingPayment
+            }
+            className="flex items-center justify-center w-full gap-x-1  bg-orange-500 text-white h-9 rounded font-medium px-1 disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
-            {placeOrderMutation.isLoading ? (
+            {createPaymentIntentMutation.isLoading ? (
               <span className="loading loading-bars loading-md"></span>
             ) : (
-              <span>PLACE ORDER</span>
+              <span>
+                {clientSecret
+                  ? "PAY NOW"
+                  : isOptionMethod === "stripe"
+                  ? "PREPARE PAYMENT"
+                  : "PLACE ORDER"}
+              </span>
             )}
 
             <svg
@@ -277,6 +415,17 @@ export default function Checkout() {
               />
             </svg>
           </button>
+          <br />
+          {paymentError && (
+            <div className="text-red-500 text-sm">{paymentError}</div>
+          )}
+          {paymentSuccess && (
+            <div className="text-green-500 text-sm">
+              {clientSecret
+                ? "Payment prepared! Enter your card details above."
+                : `Payment successful! Order ID: ${orderId}`}
+            </div>
+          )}
         </div>
       </form>
     </>

@@ -1,6 +1,9 @@
-export default function Loading() {
-  return (
-    <div className="flex items-center justify-center w-56 h-56 bg-transparent">
+export default function Loading({
+  fullScreen = false,
+  message = "Loading...",
+}) {
+  const loadingContent = (
+    <div className="flex flex-col items-center justify-center">
       <div role="status">
         <svg
           aria-hidden="true"
@@ -20,6 +23,23 @@ export default function Loading() {
         </svg>
         <span className="sr-only">Loading...</span>
       </div>
+      {message && <p className="mt-4 text-gray-600 font-medium">{message}</p>}
+    </div>
+  );
+
+  if (fullScreen) {
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-8 shadow-lg">
+          {loadingContent}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center justify-center w-56 h-56 bg-transparent">
+      {loadingContent}
     </div>
   );
 }
