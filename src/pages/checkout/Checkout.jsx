@@ -91,20 +91,13 @@ export default function Checkout() {
     onSuccess: (data) => {
       // Store the response data
       setClientSecret(data.clientSecret);
-      setOrderId(data.orderId); // Store the orderId from backend
+      setOrderId(data.orderId);
       setPaymentError(null);
       setIsProcessingPayment(false);
 
-      console.log("✅ Ready for payment step");
-      console.log("Order ID:", data.orderId);
-
       // Show success message
       setPaymentSuccess(true);
-      setTimeout(() => setPaymentSuccess(false), 3000); // Clear after 3 seconds
-
-      // NOTE: Order exists in database but payment not completed yet
-      // Show success message that order is created
-      // But don't redirect yet - wait for payment
+      setTimeout(() => setPaymentSuccess(false), 5000); // Clear after 3 seconds
     },
     onError: (error) => {
       console.log(
