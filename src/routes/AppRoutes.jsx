@@ -10,6 +10,8 @@ import ProfileSummary from "../pages/user/ProfileSummary";
 import AccountDetails from "../pages/user/AccountDetails";
 import AllAdressess from "../pages/user/AllAdresses";
 import PaymentDetails from "../pages/user/PaymentDetails";
+import OrderHistory from "../pages/user/OrderHistory";
+import OrderDetails from "../pages/user/OrderDetails";
 import Contact from "../pages/auth/Contact";
 import Login from "../pages/auth/Login";
 import SignUp from "../pages/auth/SignUp";
@@ -44,6 +46,8 @@ export default function AppRouter() {
               path="/profile/payment-details"
               element={<PaymentDetails />}
             />
+            <Route path="/profile/orders" element={<OrderHistory />} />
+            <Route path="/profile/orders/:orderId" element={<OrderDetails />} />
           </Route>
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Login />} />

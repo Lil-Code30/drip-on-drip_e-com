@@ -3,7 +3,11 @@ import { useUser } from "../../contexts/UserInfosContext";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Loading from "../../components/common/Loading";
 import Error from "../../components/common/Error";
-import { getUserProfile, getAllProfileAddresses } from "../../api";
+import {
+  getUserProfile,
+  getAllProfileAddresses,
+  getUserOrders,
+} from "../../api";
 import { showToast } from "../../components/common/ToastNotify";
 
 const Profile = () => {
@@ -31,6 +35,14 @@ const Profile = () => {
       return data;
     },
     enabled: !!ProfileQuery,
+  });
+
+  const userOrdersQuery = useQuery({
+    queryKey: ["orders"],
+    queryFn: async () => {
+      const data = await getUserOrders(userInfos.token);
+      return data;
+    },
   });
 
   if (!userInfos?.token) {
@@ -70,6 +82,7 @@ const Profile = () => {
 
   const userProfile = ProfileQuery?.data;
   const userAdresses = ProfileAddressesQuery?.data;
+  const UserOrders = userOrdersQuery?.data;
 
   return (
     <>
@@ -93,7 +106,9 @@ const Profile = () => {
           <div className="mb-2">
             <h2 className="profile-title">Order Information</h2>
             <div className="flex flex-col p-1">
-              <Link className="hover:underline">Order History</Link>
+              <Link to="/profile/orders" className="hover:underline">
+                Order History
+              </Link>
               <Link className="hover:underline">Return</Link>
             </div>
           </div>
@@ -123,7 +138,9 @@ const Profile = () => {
           ) : ProfileAddressesQuery.isError ? (
             <Error error="Error when fetching user profile" />
           ) : (
-            <Outlet context={{ userInfos, userProfile, userAdresses }} />
+            <Outlet
+              context={{ userInfos, userProfile, userAdresses, UserOrders }}
+            />
           )}
         </div>
       </section>

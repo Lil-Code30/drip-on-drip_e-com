@@ -7,7 +7,7 @@ import { useWishList } from "../../contexts/WishListContext";
 const ProfileSummary = () => {
   const navigate = useNavigate();
   const { handleUser } = useUser();
-  const { userProfile, userAdresses } = useOutletContext();
+  const { userProfile, userAdresses, UserOrders } = useOutletContext();
   const { wishList } = useWishList();
 
   const [wishListDB, setWishList] = useState(wishList);
@@ -101,25 +101,40 @@ const ProfileSummary = () => {
           <div className="border rounded my-2">
             <h2 className=" bg-gray-300 border-gray-300 rounded flex items-center justify-between py-1.5 px-1">
               <span>Order History</span>{" "}
-              <Link className="text-gray-500 underline">view all orders</Link>
+              <Link to="/profile/orders" className="text-gray-500 underline">
+                view all orders
+              </Link>
             </h2>
             <div className="flex items-center justify-around  py-2">
               <Wallet size="50" />
               <div className="text-sm ">
-                <p>
-                  {" "}
-                  <span className="font-semibold">Order Number : </span>
-                  MUSWDRFG
-                </p>
-                <p>
-                  {" "}
-                  <span className="font-semibold">Date Ordered : </span>{" "}
-                  23/09/2024
-                </p>
-                <p>
-                  {" "}
-                  <span className="font-semibold">Status : </span>dispatched
-                </p>
+                {UserOrders?.length > 0 ? (
+                  UserOrders?.map((item) => {
+                    return (
+                      <>
+                        <p>
+                          {" "}
+                          <span className="font-semibold">Order Number : </span>
+                          {item.id}
+                        </p>
+                        <p>
+                          {" "}
+                          <span className="font-semibold">
+                            Date Ordered :{" "}
+                          </span>{" "}
+                          {item.createdAt.split("T")[0]}
+                        </p>
+                        <p>
+                          {" "}
+                          <span className="font-semibold">Status : </span>
+                          {item.status}
+                        </p>
+                      </>
+                    );
+                  })[0]
+                ) : (
+                  <p>You have no order</p>
+                )}
               </div>
             </div>
           </div>

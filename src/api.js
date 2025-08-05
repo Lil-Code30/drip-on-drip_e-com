@@ -321,3 +321,29 @@ export const createPaymentIntent = async (
 
   return data;
 };
+
+// function to get user's order history
+export const getUserOrders = async (token) => {
+  const res = await api.get("/user/orders", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const { data } = res;
+
+  return data;
+};
+
+// function to get user order's details
+export const getOrderDertails = async (token, orderId) => {
+  const res = await api.get(`/user/orders/${orderId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const { data } = res;
+
+  return data;
+};
