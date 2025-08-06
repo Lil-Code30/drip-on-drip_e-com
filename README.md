@@ -6,13 +6,13 @@ DripOnDrip is a modern, full-stack e-commerce web application for clothing. This
 
 ## ✨ Features
 
-*   Browse and search for products
-*   View product details
-*   Add products to cart and wishlist
-*   User authentication (login, signup, email verification)
-*   Checkout with Stripe
-*   User profile management (addresses, orders, etc.)
-*   Responsive design for mobile and desktop
+- Browse and search for products
+- View product details
+- Add products to cart and wishlist
+- User authentication (login, signup, email verification)
+- Checkout with Stripe
+- User profile management (addresses, orders, etc.)
+- Responsive design for mobile and desktop
 
 ---
 
@@ -20,18 +20,18 @@ DripOnDrip is a modern, full-stack e-commerce web application for clothing. This
 
 ### Frontend
 
-*   **React.js**: A JavaScript library for building user interfaces.
-*   **Tailwind CSS**: A utility-first CSS framework for rapid UI development.
-*   **React Router**: For declarative routing in a React application.
-*   **React Query**: For data fetching, caching, and state management.
-*   **Axios**: A promise-based HTTP client for the browser and Node.js.
-*   **Stripe.js**: For secure online payments.
-*   **React Hook Form**: For building performant and flexible forms.
-*   **Vite**: A fast build tool and development server.
-*   **Lucide React**: A library of simply designed, beautiful icons.
-*   **React Toastify**: For adding notifications to your app.
-*   **use-debounce**: A React hook to debounce callbacks.
-*   **daisyUI**: A component library for Tailwind CSS.
+- **React.js**: A JavaScript library for building user interfaces.
+- **Tailwind CSS**: A utility-first CSS framework for rapid UI development.
+- **React Router**: For declarative routing in a React application.
+- **React Query**: For data fetching, caching, and state management.
+- **Axios**: A promise-based HTTP client for the browser and Node.js.
+- **Stripe.js**: For secure online payments.
+- **React Hook Form**: For building performant and flexible forms.
+- **Vite**: A fast build tool and development server.
+- **Lucide React**: A library of simply designed, beautiful icons.
+- **React Toastify**: For adding notifications to your app.
+- **use-debounce**: A React hook to debounce callbacks.
+- **daisyUI**: A component library for Tailwind CSS.
 
 ### Backend
 
@@ -66,11 +66,11 @@ npm run dev
 
 You can use the following test card details provided by Stripe to simulate payments in the development environment:
 
-| Card Brand      | Card Number        | Expiry Date | CVC |
-| --------------- | ------------------ | ----------- | --- |
-| Visa            | 4242 4242 4242 4242 | Any future  | 123 |
-| Mastercard      | 5555 5555 5555 5555 | Any future  | 123 |
-| American Express| 3782 8224 6310 005  | Any future  | 123 |
+| Card Brand       | Card Number         | Expiry Date | CVC |
+| ---------------- | ------------------- | ----------- | --- |
+| Visa             | 4242 4242 4242 4242 | Any future  | 123 |
+| Mastercard       | 5555 5555 5555 5555 | Any future  | 123 |
+| American Express | 3782 8224 6310 005  | Any future  | 123 |
 
 For more test cards and payment methods, refer to the official [Stripe testing documentation](https://stripe.com/docs/testing).
 
