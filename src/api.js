@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://drip-on-drip-e-com-backend.onrender.com/api",
+  baseURL: "https://drip-on-drip-e-com-backend.onrender.com/api/v1",
   headers: { "Content-Type": "application/json" },
 });
 
